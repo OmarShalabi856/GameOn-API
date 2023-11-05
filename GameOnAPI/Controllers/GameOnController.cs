@@ -24,7 +24,7 @@ namespace GameOnAPI.Controllers
 		}
 
 		[HttpGet("featured",Name = "GetFeaturedMatches")]
-		public ActionResult<IEnumerable<Match>> Get()
+		public ActionResult<IEnumerable<Match>> GetFeaturedMatches()
 		{
 			try
 			{
@@ -40,6 +40,24 @@ namespace GameOnAPI.Controllers
 				return StatusCode(500, "An error occurred while processing your request.");
 			}
 
+		}
+		[HttpGet("match-details",Name="GetMatchDetails")]
+		public ActionResult<Match> GetMatchDetails(int id)
+		{
+			try
+			{
+				var match = _db.Match.Where(x=>x.Id==id).Include(x=>x.field);
+				if(match == null)
+				{
+					return NotFound("Match is not found!");
+				}
+				return Ok(match);
+			}
+			catch(Exception ex)
+			{
+				_logger.LogError("An Error occured when retrieving match details");
+				return StatusCode(500, "An error occurred while processing your request.");
+			}
 		}
 
 
