@@ -4,6 +4,7 @@ using GameOnAPI.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GameOnAPI.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20231104174033_addedExamples")]
+    partial class addedExamples
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -21,54 +24,6 @@ namespace GameOnAPI.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
-
-            modelBuilder.Entity("GameOnAPI.Models.Field", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("FieldImage")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("FieldName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Location")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Field");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            FieldImage = "https://assets.rappler.com/6677C2B68AF94FD1BD758C065AC43A07/img/43648E3295544C6A8EF16B42BDF2F6D6/6.jpg",
-                            FieldName = "AllSports",
-                            Location = "Bchamoun"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            FieldImage = "https://th.bing.com/th/id/R.59f002d1a5d3dae68612a521fb245ffe?rik=2Z9vdMR9H5Ni9g&riu=http%3a%2f%2fwww.artificialturf-grass.com%2fphoto%2fpl11353642-durable_false_turf_playground_soccer_synthetic_grass_environment_friendly.jpg&ehk=z4WhEwLG8xnj49JE3nraLCVHEmerkxdcLha7MK9qDjY%3d&risl=&pid=ImgRaw&r=0",
-                            FieldName = "GreenField",
-                            Location = "Aley"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            FieldImage = "https://th.bing.com/th/id/OIP.WNQW57IvkqWmB7lcL08MMgHaE7?pid=ImgDet&w=207&h=138&c=7",
-                            FieldName = "KasKas",
-                            Location = "Beirut"
-                        });
-                });
 
             modelBuilder.Entity("GameOnAPI.Models.MatchParticipation", b =>
                 {
@@ -193,7 +148,7 @@ namespace GameOnAPI.Migrations
                         {
                             Id = "324u3943583404",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "38dc2d34-ce2b-48b4-b01d-f61982185755",
+                            ConcurrencyStamp = "a962336d-70be-4494-9d53-ea3ecd9b9259",
                             Email = "user1@example.com",
                             EmailConfirmed = false,
                             FavoriteTeam = "Liverpool",
@@ -202,7 +157,7 @@ namespace GameOnAPI.Migrations
                             LockoutEnabled = false,
                             PhoneNumberConfirmed = false,
                             ProfileImageUrl = "profile1.jpg",
-                            SecurityStamp = "69b32084-3810-4827-ae2a-9b8ab88227f5",
+                            SecurityStamp = "71386c20-0fb4-4a1e-8e9a-ea95e0582ae5",
                             TwoFactorEnabled = false,
                             UserName = "Samer",
                             Weight = 70.299999999999997,
@@ -214,7 +169,7 @@ namespace GameOnAPI.Migrations
                         {
                             Id = "32ewdewd83404",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "0cf44167-2168-48f7-9e8c-f4aeebd475c8",
+                            ConcurrencyStamp = "1bd63788-2c6e-4325-9779-20d629b47d5b",
                             Email = "user2@example.com",
                             EmailConfirmed = false,
                             FavoriteTeam = "Barcelona",
@@ -223,7 +178,7 @@ namespace GameOnAPI.Migrations
                             LockoutEnabled = false,
                             PhoneNumberConfirmed = false,
                             ProfileImageUrl = "profile2.jpg",
-                            SecurityStamp = "66d237e6-eb8e-4978-bc9d-83d70cd29e5b",
+                            SecurityStamp = "e333bcf8-212c-40a6-990d-fc99cc7b99c6",
                             TwoFactorEnabled = false,
                             UserName = "Ali",
                             Weight = 75.200000000000003,
@@ -235,7 +190,7 @@ namespace GameOnAPI.Migrations
                         {
                             Id = "32322432nvfvfwdewd83404",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "69da71ff-4673-47a6-b9ad-8881131b72d0",
+                            ConcurrencyStamp = "5ab3769f-373c-4642-ada2-bfc19bb436af",
                             Email = "user3@example.com",
                             EmailConfirmed = false,
                             FavoriteTeam = "Real Madrid",
@@ -244,7 +199,7 @@ namespace GameOnAPI.Migrations
                             LockoutEnabled = false,
                             PhoneNumberConfirmed = false,
                             ProfileImageUrl = "profile3.jpg",
-                            SecurityStamp = "f8d41ccf-0b22-4cba-b8fc-bfabf74ec170",
+                            SecurityStamp = "d522cd36-f030-40f1-9846-bbef5fa7439f",
                             TwoFactorEnabled = false,
                             UserName = "Omar",
                             Weight = 68.5,
@@ -256,7 +211,7 @@ namespace GameOnAPI.Migrations
                         {
                             Id = "3232onffenmessi8marvfwdewd83404",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "0dc8752d-30df-4eab-87cf-dda47f1ca858",
+                            ConcurrencyStamp = "0138c9a7-01ff-49fd-9b54-7041c15e5caa",
                             Email = "user3@example.com",
                             EmailConfirmed = false,
                             FavoriteTeam = "Napoli",
@@ -265,7 +220,7 @@ namespace GameOnAPI.Migrations
                             LockoutEnabled = false,
                             PhoneNumberConfirmed = false,
                             ProfileImageUrl = "profile4.jpg",
-                            SecurityStamp = "f0bba428-e9bb-4983-9958-6e0d63ef8ec4",
+                            SecurityStamp = "90d27fb7-9dda-43a4-b3f0-bd26a54a3210",
                             TwoFactorEnabled = false,
                             UserName = "Hussein",
                             Weight = 68.5,
@@ -289,11 +244,13 @@ namespace GameOnAPI.Migrations
                     b.Property<DateTime>("EndDateTime")
                         .HasColumnType("datetime2");
 
-                    b.Property<bool>("Featured")
-                        .HasColumnType("bit");
+                    b.Property<string>("FieldName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("FieldId")
-                        .HasColumnType("int");
+                    b.Property<string>("Location")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("PlayerCount")
                         .HasColumnType("int");
@@ -309,44 +266,42 @@ namespace GameOnAPI.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("FieldId");
-
                     b.ToTable("Match");
 
                     b.HasData(
                         new
                         {
                             Id = 3,
-                            DeadlineRequestsDateTime = new DateTime(2023, 11, 5, 23, 23, 55, 95, DateTimeKind.Local).AddTicks(1693),
-                            EndDateTime = new DateTime(2023, 11, 7, 2, 23, 55, 95, DateTimeKind.Local).AddTicks(1681),
-                            Featured = true,
-                            FieldId = 3,
+                            DeadlineRequestsDateTime = new DateTime(2023, 11, 5, 19, 40, 33, 423, DateTimeKind.Local).AddTicks(4070),
+                            EndDateTime = new DateTime(2023, 11, 6, 22, 40, 33, 423, DateTimeKind.Local).AddTicks(4064),
+                            FieldName = "Field 2",
+                            Location = "Sample Location 2",
                             PlayerCount = 8,
-                            StartDateTime = new DateTime(2023, 11, 6, 23, 23, 55, 95, DateTimeKind.Local).AddTicks(1602),
+                            StartDateTime = new DateTime(2023, 11, 6, 19, 40, 33, 423, DateTimeKind.Local).AddTicks(4008),
                             Team1GoalCount = 1,
                             Team2GoalCount = 2
                         },
                         new
                         {
                             Id = 2,
-                            DeadlineRequestsDateTime = new DateTime(2023, 11, 5, 21, 23, 55, 95, DateTimeKind.Local).AddTicks(1722),
-                            EndDateTime = new DateTime(2023, 11, 8, 1, 23, 55, 95, DateTimeKind.Local).AddTicks(1714),
-                            Featured = true,
-                            FieldId = 2,
+                            DeadlineRequestsDateTime = new DateTime(2023, 11, 5, 17, 40, 33, 423, DateTimeKind.Local).AddTicks(4084),
+                            EndDateTime = new DateTime(2023, 11, 7, 21, 40, 33, 423, DateTimeKind.Local).AddTicks(4081),
+                            FieldName = "Field 3",
+                            Location = "Sample Location 3",
                             PlayerCount = 12,
-                            StartDateTime = new DateTime(2023, 11, 7, 23, 23, 55, 95, DateTimeKind.Local).AddTicks(1705),
+                            StartDateTime = new DateTime(2023, 11, 7, 19, 40, 33, 423, DateTimeKind.Local).AddTicks(4078),
                             Team1GoalCount = 3,
                             Team2GoalCount = 1
                         },
                         new
                         {
                             Id = 1,
-                            DeadlineRequestsDateTime = new DateTime(2023, 11, 5, 19, 23, 55, 95, DateTimeKind.Local).AddTicks(1747),
-                            EndDateTime = new DateTime(2023, 11, 9, 1, 23, 55, 95, DateTimeKind.Local).AddTicks(1738),
-                            Featured = true,
-                            FieldId = 1,
+                            DeadlineRequestsDateTime = new DateTime(2023, 11, 5, 15, 40, 33, 423, DateTimeKind.Local).AddTicks(4096),
+                            EndDateTime = new DateTime(2023, 11, 8, 21, 40, 33, 423, DateTimeKind.Local).AddTicks(4093),
+                            FieldName = "Field 4",
+                            Location = "Sample Location 4",
                             PlayerCount = 16,
-                            StartDateTime = new DateTime(2023, 11, 8, 23, 23, 55, 95, DateTimeKind.Local).AddTicks(1733),
+                            StartDateTime = new DateTime(2023, 11, 8, 19, 40, 33, 423, DateTimeKind.Local).AddTicks(4089),
                             Team1GoalCount = 2,
                             Team2GoalCount = 4
                         });
@@ -492,17 +447,6 @@ namespace GameOnAPI.Migrations
                     b.HasOne("Match", null)
                         .WithMany("Team2")
                         .HasForeignKey("MatchId1");
-                });
-
-            modelBuilder.Entity("Match", b =>
-                {
-                    b.HasOne("GameOnAPI.Models.Field", "field")
-                        .WithMany()
-                        .HasForeignKey("FieldId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("field");
                 });
 
             modelBuilder.Entity("GameOnAPI.Models.User", b =>
