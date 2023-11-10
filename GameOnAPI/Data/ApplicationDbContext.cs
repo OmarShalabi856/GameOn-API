@@ -27,6 +27,7 @@ namespace GameOnAPI.Data
 				{
 					Id = "324u3943583404",
 					UserName = "Samer",
+					Name="Samer Shalabi",
 					Email = "user1@example.com",
 					position = Position.Forward,
 					preferredFoot = PreferredFoot.Right,
@@ -41,6 +42,7 @@ namespace GameOnAPI.Data
 				{
 					Id = "32ewdewd83404",
 					UserName = "Ali",
+					Name = "Ali Hussein",
 					Email = "user2@example.com",
 					position = Position.Defender,
 					preferredFoot = PreferredFoot.Left,
@@ -56,6 +58,7 @@ namespace GameOnAPI.Data
 
 					Id = "32322432nvfvfwdewd83404",
 					UserName = "Omar",
+					Name = "Omar Shalabi",
 					Email = "user3@example.com",
 					position = Position.Midfielder,
 					preferredFoot = PreferredFoot.Right,
@@ -72,6 +75,7 @@ namespace GameOnAPI.Data
 
 					Id = "3232onffenmessi8marvfwdewd83404",
 					UserName = "Hussein",
+					Name = "Hussein Ali",
 					Email = "user3@example.com",
 					position = Position.Midfielder,
 					preferredFoot = PreferredFoot.Right,
@@ -88,7 +92,7 @@ namespace GameOnAPI.Data
 					Id = 3,
 					StartDateTime = DateTime.Now.AddDays(2),
 					EndDateTime = DateTime.Now.AddDays(2).AddHours(3),
-					DeadlineRequestsDateTime = DateTime.Now.AddHours(40),
+					DeadlineRequestsDateTime = DateTime.Now.AddHours(300),
 					FieldId=3,
 					PlayerCount = 8,
 					Team1GoalCount = 1,
@@ -101,7 +105,7 @@ namespace GameOnAPI.Data
 					Id = 2,
 					StartDateTime = DateTime.Now.AddDays(3),
 					EndDateTime = DateTime.Now.AddDays(3).AddHours(2),
-					DeadlineRequestsDateTime = DateTime.Now.AddHours(38),
+					DeadlineRequestsDateTime = DateTime.Now.AddHours(200),
 					FieldId=2,
 					PlayerCount = 12,
 					Team1GoalCount = 3,
@@ -113,7 +117,7 @@ namespace GameOnAPI.Data
 					Id = 1,
 					StartDateTime = DateTime.Now.AddDays(4),
 					EndDateTime = DateTime.Now.AddDays(4).AddHours(2),
-					DeadlineRequestsDateTime = DateTime.Now.AddHours(38),
+					DeadlineRequestsDateTime = DateTime.Now.AddHours(120),
 					FieldId=1,
 					PlayerCount = 16,
 					Team1GoalCount = 2,

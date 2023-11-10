@@ -1,28 +1,23 @@
-﻿using Microsoft.AspNetCore.Identity;
-using System;
-using System.Collections.Generic;
+﻿using GameOnAPI.Models;
 using System.ComponentModel.DataAnnotations;
 
-namespace GameOnAPI.Models
+namespace GameOnAPI.DTOs
 {
-	public class User : IdentityUser
+	public class PlayerUser
 	{
-		public User() { }
-		[Required]
+		public string ID { get; set; }
+		public string Name { get; set; }
+		public string Email { get; set; }
 		public Position position { get; set; }
-		[Required]
 		public PreferredFoot preferredFoot { get; set; }
 		public ExperienceLevel experienceLevel { get; set; }
-		public string FavoriteTeam { get; set; } = "";
-		[Required]
+		public string FavoriteTeam { get; set; }
 		public double Height { get; set; }
-		[Required]
 		public double Weight { get; set; }
-		public string Location { get; set; } = "";
-		public string ProfileImageUrl { get; set; } = "";
+		public string Location { get; set; }
+		public string ProfileImageUrl { get; set; }
 		public List<MatchParticipation> MatchParticipations { get; set; }
-
-		public string Name { get; set; }
+		public string token { get; set; }	
 
 		public enum Position
 		{
