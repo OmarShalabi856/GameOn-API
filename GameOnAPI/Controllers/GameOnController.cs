@@ -1,4 +1,5 @@
 using GameOnAPI.Data;
+using GameOnAPI.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -46,7 +47,9 @@ namespace GameOnAPI.Controllers
 		{
 			try
 			{
-				var match = _db.Match.Where(x=>x.Id==id).Include(x=>x.field);
+				var match = _db.Match.Where(x=>x.Id==id)
+					.Include(x=>x.field)
+					.Include(x=>x.Participations);
 				if(match == null)
 				{
 					return NotFound("Match is not found!");

@@ -14,6 +14,6 @@ namespace GameOnAPI.Models
 		public string FieldName { get; set; }
 
 		[Required]
-		public string FieldImage { get; set; }	
+		public string FieldImage { get; set; }
 	}
 }

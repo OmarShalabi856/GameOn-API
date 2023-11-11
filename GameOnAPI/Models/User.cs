@@ -26,9 +26,14 @@ namespace GameOnAPI.Models
 
 		public enum Position
 		{
-			Forward,
-			Midfielder,
-			Defender,
+			Striker,
+			Left_Winger,
+			Right_Winger,
+			Defensive_Midfielder,
+			General_Midfielder,
+			Left_Back,
+			Center_Back,
+			Right_Back,
 			Goalkeeper
 		}
 

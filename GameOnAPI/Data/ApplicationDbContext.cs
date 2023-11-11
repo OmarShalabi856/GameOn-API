@@ -18,6 +18,11 @@ namespace GameOnAPI.Data
 
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
+			modelBuilder.Entity<Match>()
+		   .HasMany(match => match.Participations)
+		   .WithOne(participation => participation.Match)
+		   .OnDelete(DeleteBehavior.Cascade);
+
 			modelBuilder.Entity<IdentityUserLogin<string>>().HasNoKey();
 			modelBuilder.Entity<IdentityUserRole<string>>().HasNoKey();
 			modelBuilder.Entity<IdentityUserToken<string>>().HasNoKey();
@@ -27,9 +32,9 @@ namespace GameOnAPI.Data
 				{
 					Id = "324u3943583404",
 					UserName = "Samer",
-					Name="Samer Shalabi",
+					Name = "Samer Shalabi",
 					Email = "user1@example.com",
-					position = Position.Forward,
+					position = Position.General_Midfielder,
 					preferredFoot = PreferredFoot.Right,
 					experienceLevel = ExperienceLevel.Professional,
 					FavoriteTeam = "Liverpool",
@@ -44,7 +49,7 @@ namespace GameOnAPI.Data
 					UserName = "Ali",
 					Name = "Ali Hussein",
 					Email = "user2@example.com",
-					position = Position.Defender,
+					position = Position.Right_Back,
 					preferredFoot = PreferredFoot.Left,
 					experienceLevel = ExperienceLevel.Amateur,
 					FavoriteTeam = "Barcelona",
@@ -60,7 +65,7 @@ namespace GameOnAPI.Data
 					UserName = "Omar",
 					Name = "Omar Shalabi",
 					Email = "user3@example.com",
-					position = Position.Midfielder,
+					position = Position.Striker,
 					preferredFoot = PreferredFoot.Right,
 					experienceLevel = ExperienceLevel.Professional,
 					FavoriteTeam = "Real Madrid",
@@ -77,7 +82,7 @@ namespace GameOnAPI.Data
 					UserName = "Hussein",
 					Name = "Hussein Ali",
 					Email = "user3@example.com",
-					position = Position.Midfielder,
+					position = Position.Center_Back,
 					preferredFoot = PreferredFoot.Right,
 					experienceLevel = ExperienceLevel.Professional,
 					FavoriteTeam = "Napoli",
@@ -93,11 +98,9 @@ namespace GameOnAPI.Data
 					StartDateTime = DateTime.Now.AddDays(2),
 					EndDateTime = DateTime.Now.AddDays(2).AddHours(3),
 					DeadlineRequestsDateTime = DateTime.Now.AddHours(300),
-					FieldId=3,
+					FieldId = 3,
 					PlayerCount = 8,
-					Team1GoalCount = 1,
-					Team2GoalCount = 2,
-					Featured=true
+					Featured = true
 
 				},
 				new Match
@@ -106,10 +109,8 @@ namespace GameOnAPI.Data
 					StartDateTime = DateTime.Now.AddDays(3),
 					EndDateTime = DateTime.Now.AddDays(3).AddHours(2),
 					DeadlineRequestsDateTime = DateTime.Now.AddHours(200),
-					FieldId=2,
+					FieldId = 2,
 					PlayerCount = 12,
-					Team1GoalCount = 3,
-					Team2GoalCount = 1,
 					Featured = true,
 				},
 				new Match
@@ -118,10 +119,8 @@ namespace GameOnAPI.Data
 					StartDateTime = DateTime.Now.AddDays(4),
 					EndDateTime = DateTime.Now.AddDays(4).AddHours(2),
 					DeadlineRequestsDateTime = DateTime.Now.AddHours(120),
-					FieldId=1,
+					FieldId = 1,
 					PlayerCount = 16,
-					Team1GoalCount = 2,
-					Team2GoalCount = 4,
 					Featured = true
 				}
 
@@ -130,10 +129,10 @@ namespace GameOnAPI.Data
 			modelBuilder.Entity<Field>().HasData(
 				new Field
 				{
-				Id=1,
-				FieldName = "AllSports", 
-				FieldImage = "https://assets.rappler.com/6677C2B68AF94FD1BD758C065AC43A07/img/43648E3295544C6A8EF16B42BDF2F6D6/6.jpg", 
-				Location = "Bchamoun" 
+					Id = 1,
+					FieldName = "AllSports",
+					FieldImage = "https://assets.rappler.com/6677C2B68AF94FD1BD758C065AC43A07/img/43648E3295544C6A8EF16B42BDF2F6D6/6.jpg",
+					Location = "Bchamoun"
 				},
 
 				new Field
@@ -153,6 +152,27 @@ namespace GameOnAPI.Data
 				}
 				);
 
+			modelBuilder.Entity<MatchParticipation>().HasData(
+				new MatchParticipation
+				{
+					Id = 1,
+					UserId = "3232onffenmessi8marvfwdewd83404",
+					MatchId=1,
+					position=Position.Left_Back,
+					TeamPlayingFor=Team.Team1,
+
+				},
+				new MatchParticipation
+				{
+					Id = 2,
+					UserId = "32ewdewd83404",
+					MatchId = 1,
+					position = Position.Striker,
+					TeamPlayingFor = Team.Team2,
+
+				}
+				);
 		}
-	}
+
+	} 
 }

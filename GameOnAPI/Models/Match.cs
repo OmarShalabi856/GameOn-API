@@ -23,9 +23,5 @@ public class Match
 	public bool Featured { get; set; }	
 	
 	public Field field { get; set; }
-	public List<User> Team1 { get; set; }
-	public List<User> Team2 { get; set; }
-
-	public int Team1GoalCount { get; set; }
-	public int Team2GoalCount { get; set; }
+	public List<MatchParticipation> Participations { get; set; }	
 }
