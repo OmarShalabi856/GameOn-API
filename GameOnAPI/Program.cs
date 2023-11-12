@@ -7,6 +7,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Identity.Web;
 using Microsoft.Extensions.Configuration;
 using GameOnAPI.Services;
+using AutoMapper;
+using GameOnAPI;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,6 +20,13 @@ builder.Services.AddControllers().AddJsonOptions(options =>
 {
 	options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.Preserve;
 });
+
+IMapper Mapper = MappingConfig.RegisterMaps().CreateMapper();
+
+builder.Services.AddSingleton(Mapper);
+builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies()) ;
+
+builder.Services.AddScoped<IJWTTokenGenerator,JWTTokenGenerator>();
 
 builder.Services.AddIdentity<User, IdentityRole>()
 	.AddEntityFrameworkStores<ApplicationDbContext>()

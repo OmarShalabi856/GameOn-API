@@ -1,4 +1,6 @@
+using AutoMapper;
 using GameOnAPI.Data;
+using GameOnAPI.DTOs;
 using GameOnAPI.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -17,11 +19,13 @@ namespace GameOnAPI.Controllers
 
 		private readonly ILogger<GameOnController> _logger;
 		private readonly ApplicationDbContext _db;
+		private readonly IMapper _mapper;
 
-		public GameOnController(ILogger<GameOnController> logger, ApplicationDbContext db)
+		public GameOnController(ILogger<GameOnController> logger, ApplicationDbContext db,IMapper mapper)
 		{
 			_logger = logger;
 			_db = db;
+			_mapper = mapper;
 		}
 
 		[HttpGet("featured",Name = "GetFeaturedMatches")]
@@ -47,14 +51,20 @@ namespace GameOnAPI.Controllers
 		{
 			try
 			{
-				var match = _db.Match.Where(x=>x.Id==id)
-					.Include(x=>x.field)
-					.Include(x=>x.Participations);
+				var match = _db.Match.Where(x => x.Id == id)
+					.Include(x => x.field)
+					.Include(x => x.Participations)
+					.ThenInclude(p => p.User).FirstOrDefault();
+
+
 				if(match == null)
 				{
+					
 					return NotFound("Match is not found!");
 				}
-				return Ok(match);
+				//match.Participations.ForEach(p => p.User=_mapper.Map<PlayerUser>(p.User));
+				var matchDTO = _mapper.Map<MatchDTO>(match);
+				return Ok(matchDTO);
 			}
 			catch(Exception ex)
 			{
