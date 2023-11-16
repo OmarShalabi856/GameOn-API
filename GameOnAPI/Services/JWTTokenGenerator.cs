@@ -26,7 +26,6 @@ namespace GameOnAPI.Services
 			var claimList = new List<Claim>()
 			{
 				new Claim(JwtRegisteredClaimNames.Email,user.Email),
-				new Claim(JwtRegisteredClaimNames.Name,user.Username),
 			};
 
 			var tokenDescriptor = new SecurityTokenDescriptor

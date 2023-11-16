@@ -5,6 +5,7 @@ using GameOnAPI.Models;
 using GameOnAPI.Responses;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 
 namespace GameOnAPI.Services
 {
@@ -16,7 +17,7 @@ namespace GameOnAPI.Services
 		private readonly IMapper _mapper;
 		private readonly IJWTTokenGenerator _tokenGenerator;
 
-		public AuthService(ApplicationDbContext db, UserManager<User> userManager, RoleManager<IdentityRole> roleManager, IMapper mapper,IJWTTokenGenerator tokenGenerator)
+		public AuthService(ApplicationDbContext db, UserManager<User> userManager, RoleManager<IdentityRole> roleManager, IMapper mapper, IJWTTokenGenerator tokenGenerator)
 		{
 			_db = db;
 			_userManager = userManager;
@@ -24,6 +25,36 @@ namespace GameOnAPI.Services
 			_mapper = mapper;
 			_tokenGenerator = tokenGenerator;
 		}
+
+		public async Task<bool> AssignRole(string email, string roleName)
+		{
+			var user = await _userManager.FindByEmailAsync(email);
+
+			if (user != null && _userManager != null && _roleManager != null)
+			{
+				if (!await _roleManager.RoleExistsAsync(roleName))
+				{
+					await _roleManager.CreateAsync(new IdentityRole(roleName));
+				}
+
+				try
+				{
+					
+						await _userManager.AddToRoleAsync(user, "ADMIN");
+					
+
+					return true;
+				}
+				catch (Exception ex)
+				{
+					Console.WriteLine(ex.Message);
+					return false;
+				}
+			}
+
+			return false;
+		}
+
 
 
 		public async Task<string> RegisterUserAsync(RegisterUser user)
@@ -54,7 +85,7 @@ namespace GameOnAPI.Services
 
 		async Task<LoginResponse> IAuthService.LoginUserAsync(LoginUser user)
 		{
-			var _user = _db.User.FirstOrDefault(x => x.UserName.ToLower() == user.Username.ToLower());
+			var _user = _db.User.FirstOrDefault(x => x.Email.ToLower() == user.Email.ToLower());
 			bool isValid = await _userManager.CheckPasswordAsync(_user, user.Password);
 			if (user is null || !isValid)
 			{
@@ -64,6 +95,13 @@ namespace GameOnAPI.Services
 			LoginUser responseUser = _mapper.Map<LoginUser>(user);
 			string token = _tokenGenerator.GenerateToken(responseUser);
 			return new LoginResponse { LoginUser = responseUser, token = token };
+		}
+
+		public enum role
+		{
+			Admin,
+			User,
+			Co_Admin
 		}
 	}
 }

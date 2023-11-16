@@ -1,20 +1,34 @@
+using AutoMapper;
 using GameOnAPI.Data;
 using GameOnAPI.Models;
-using Microsoft.AspNetCore.Authentication;
+using GameOnAPI.Services;
+using GameOnAPI;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Identity.Web;
-using Microsoft.Extensions.Configuration;
-using GameOnAPI.Services;
-using AutoMapper;
-using GameOnAPI;
+using Microsoft.Owin.Security;
+using Microsoft.AspNet.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+{
+	options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+});
+
+builder.Services.AddIdentity<User, IdentityRole>()
+	.AddEntityFrameworkStores<ApplicationDbContext>()
+	.AddDefaultTokenProviders();
+
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 	.AddMicrosoftIdentityWebApi(builder.Configuration.GetSection("AzureAd"));
+
+builder.Services.AddScoped<IJWTTokenGenerator, JWTTokenGenerator>();
+builder.Services.AddScoped<IAuthService, AuthService>();
+
+builder.Services.Configure<JWTOptions>(builder.Configuration.GetSection("ApiSettings:JWTOptions"));
 
 builder.Services.AddControllers().AddJsonOptions(options =>
 {
@@ -22,25 +36,8 @@ builder.Services.AddControllers().AddJsonOptions(options =>
 });
 
 IMapper Mapper = MappingConfig.RegisterMaps().CreateMapper();
-
 builder.Services.AddSingleton(Mapper);
-builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies()) ;
-
-builder.Services.AddScoped<IJWTTokenGenerator,JWTTokenGenerator>();
-
-builder.Services.AddIdentity<User, IdentityRole>()
-	.AddEntityFrameworkStores<ApplicationDbContext>()
-	.AddDefaultTokenProviders();
-
-builder.Services.AddScoped<IAuthService, AuthService>();
-
-
-builder.Services.Configure<JWTOptions>(builder.Configuration.GetSection("ApiSettings:JWTOptions"));
-
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
-{
-	options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
-});
+builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 builder.Services.AddCors(options =>
 {
@@ -52,15 +49,11 @@ builder.Services.AddCors(options =>
 	});
 });
 
-builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-app.UseAuthentication();
-app.UseAuthorization();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -68,13 +61,11 @@ if (app.Environment.IsDevelopment())
 	app.UseSwaggerUI();
 }
 
-app.UseCors("AllowReactApp");
-
 app.UseHttpsRedirection();
 
+app.UseCors("AllowReactApp");
+app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapControllers();
-
+app.MapControllers(); 
 app.Run();
-

@@ -1,6 +1,7 @@
 ﻿using GameOnAPI.Data;
 using GameOnAPI.DTOs;
 using GameOnAPI.Responses;
+using static GameOnAPI.Services.AuthService;
 
 namespace GameOnAPI.Services
 {
@@ -8,5 +9,11 @@ namespace GameOnAPI.Services
 	{
 		Task<string> RegisterUserAsync(RegisterUser user);
 		Task<LoginResponse>LoginUserAsync(LoginUser user);
+
+		Task<bool> AssignRole(string email, string roleName);
+
+		
 	}
+
+	
 }

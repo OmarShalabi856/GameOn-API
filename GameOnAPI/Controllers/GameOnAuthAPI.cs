@@ -2,6 +2,7 @@
 using GameOnAPI.Responses;
 using GameOnAPI.Services;
 using Microsoft.AspNetCore.Mvc;
+using static GameOnAPI.Services.AuthService;
 
 namespace GameOnAPI.Controllers
 {
@@ -44,6 +45,22 @@ namespace GameOnAPI.Controllers
 			}
 			response.result = lr;
 			return Ok(response);
+		}
+
+		[HttpPost("add-role")]
+		public async Task<IActionResult> AddRole([FromBody] RegisterUser regUser)
+		{
+			
+				bool roleAssgined = await authService.AssignRole(regUser.Email, regUser.role);
+				if (!roleAssgined)
+				{
+					response.isSuccess = false;
+					response.message = "Could not assign role! User not found";
+					return BadRequest(response);
+				}
+				return Ok(response);
+			
+
 		}
 	}
 }
