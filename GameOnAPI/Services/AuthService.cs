@@ -39,9 +39,9 @@ namespace GameOnAPI.Services
 
 				try
 				{
-					
-						await _userManager.AddToRoleAsync(user, "ADMIN");
-					
+
+					await _userManager.AddToRoleAsync(user, "ADMIN");
+
 
 					return true;
 				}
@@ -61,7 +61,7 @@ namespace GameOnAPI.Services
 		{
 			User regUser = new User()
 			{
-				UserName = user.UserName,
+				UserName = user.Email.ToLower().Split('@')[0],
 				Email = user.Email,
 				NormalizedEmail = user.Email.ToUpper(),
 				Name = user.Name
@@ -82,6 +82,17 @@ namespace GameOnAPI.Services
 				return ex.ToString();
 			}
 		}
+
+		public async Task<bool> CheckRegEmail(string email)
+		{
+			var userAlreadyPresent = await _userManager.FindByEmailAsync(email);
+			if (userAlreadyPresent != null)
+			{
+				return true;
+			}
+			return false;
+		}
+
 
 		async Task<LoginResponse> IAuthService.LoginUserAsync(LoginUser user)
 		{

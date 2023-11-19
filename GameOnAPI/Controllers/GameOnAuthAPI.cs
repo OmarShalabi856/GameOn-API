@@ -30,7 +30,7 @@ namespace GameOnAPI.Controllers
 				return BadRequest(response);
 
 			}
-			return BadRequest(errors);	
+			return Ok(response);	
 		}
 
 		[HttpPost("login")]
@@ -47,20 +47,35 @@ namespace GameOnAPI.Controllers
 			return Ok(response);
 		}
 
-		[HttpPost("add-role")]
-		public async Task<IActionResult> AddRole([FromBody] RegisterUser regUser)
+		[HttpPost("check-email")]
+		public async Task<IActionResult> CheckEmail([FromBody] string email)
 		{
-			
-				bool roleAssgined = await authService.AssignRole(regUser.Email, regUser.role);
-				if (!roleAssgined)
-				{
-					response.isSuccess = false;
-					response.message = "Could not assign role! User not found";
-					return BadRequest(response);
-				}
-				return Ok(response);
-			
-
+			bool emailPresent = await authService.CheckRegEmail(email);
+			if (emailPresent)
+			{
+				response.isSuccess = false;
+				response.message = "This Email Already Exists!";
+				return BadRequest(response);
+			}
+			response.message = "";
+			return Ok(response);
 		}
+
+
+		//[HttpPost("add-role")]
+		//public async Task<IActionResult> AddRole([FromBody] RegisterUser regUser)
+		//{
+
+		//		bool roleAssgined = await authService.AssignRole(regUser.Email, regUser.role);
+		//		if (!roleAssgined)
+		//		{
+		//			response.isSuccess = false;
+		//			response.message = "Could not assign role! User not found";
+		//			return BadRequest(response);
+		//		}
+		//		return Ok(response);
+
+
+		//}
 	}
 }

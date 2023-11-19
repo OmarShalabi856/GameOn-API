@@ -9,7 +9,7 @@ namespace GameOnAPI.Services
 	{
 		Task<string> RegisterUserAsync(RegisterUser user);
 		Task<LoginResponse>LoginUserAsync(LoginUser user);
-
+		Task<bool> CheckRegEmail(string email);
 		Task<bool> AssignRole(string email, string roleName);
 
 		
