@@ -64,8 +64,12 @@ namespace GameOnAPI.Services
 				UserName = user.Email.ToLower().Split('@')[0],
 				Email = user.Email,
 				NormalizedEmail = user.Email.ToUpper(),
-				Name = user.Name
-
+				Name = user.Name,
+				position=user.position,
+				preferredFoot= user.preferredFoot,
+				Height=user.Height,
+				Weight=user.Weight,
+				FavoriteTeam=user.FavoriteTeam
 			};
 
 			try
@@ -113,6 +117,32 @@ namespace GameOnAPI.Services
 			Admin,
 			User,
 			Co_Admin
+		}
+
+		public enum Position
+		{
+			Striker,
+			Left_Winger,
+			Right_Winger,
+			Defensive_Midfielder,
+			General_Midfielder,
+			Left_Back,
+			Center_Back,
+			Right_Back,
+			Goalkeeper
+		}
+
+		public enum PreferredFoot
+		{
+			Right,
+			Left
+		}
+
+		public enum ExperienceLevel
+		{
+			Amateur,
+			SemiPro,
+			Professional
 		}
 	}
 }

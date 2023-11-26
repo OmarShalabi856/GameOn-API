@@ -14,6 +14,7 @@ namespace GameOnAPI.Data
 
 		public DbSet<Match> Match { get; set; }
 		public DbSet<User> User { get; set; }
+		public DbSet<Field> Field { get; set; }
 		public DbSet<MatchParticipation> MatchParticipation { get; set; }
 
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
