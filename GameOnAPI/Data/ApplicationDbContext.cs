@@ -99,6 +99,7 @@ namespace GameOnAPI.Data
 					StartDateTime = DateTime.Now.AddDays(2),
 					EndDateTime = DateTime.Now.AddDays(2).AddHours(3),
 					DeadlineRequestsDateTime = DateTime.Now.AddHours(300),
+					UserId = 1,
 					FieldId = 3,
 					PlayerCount = 8,
 					Featured = true
@@ -111,6 +112,7 @@ namespace GameOnAPI.Data
 					EndDateTime = DateTime.Now.AddDays(3).AddHours(2),
 					DeadlineRequestsDateTime = DateTime.Now.AddHours(200),
 					FieldId = 2,
+					UserId = 1,
 					PlayerCount = 12,
 					Featured = true,
 				},
@@ -121,6 +123,7 @@ namespace GameOnAPI.Data
 					EndDateTime = DateTime.Now.AddDays(4).AddHours(2),
 					DeadlineRequestsDateTime = DateTime.Now.AddHours(120),
 					FieldId = 1,
+					UserId = 1,
 					PlayerCount = 16,
 					Featured = true
 				}

@@ -1,5 +1,6 @@
 using AutoMapper;
 using Azure;
+using Azure.Core;
 using GameOnAPI.Data;
 using GameOnAPI.DTOs;
 using GameOnAPI.Models;
@@ -7,6 +8,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Identity.Web.Resource;
+using Response = GameOnAPI.DTOs.Response;
 
 namespace GameOnAPI.Controllers
 {
@@ -21,7 +23,7 @@ namespace GameOnAPI.Controllers
 		private readonly ILogger<GameOnController> _logger;
 		private readonly ApplicationDbContext _db;
 		private readonly IMapper _mapper;
-		protected DTOs.Response response;
+		protected Response response;
 
 		public GameOnController(ILogger<GameOnController> logger, ApplicationDbContext db, IMapper mapper)
 		{
@@ -49,6 +51,26 @@ namespace GameOnAPI.Controllers
 			}
 
 		}
+
+		[HttpPost("create-match", Name = "CreateMatch")]
+		public ActionResult<Response> CreateMatch(CreateMatchDTO match)
+		{
+			try
+			{
+				var matchDTO = _mapper.Map<Match>(match);
+				_db.Match.Add(matchDTO);
+				_db.SaveChanges();
+				return Ok(response);
+			}
+			catch (Exception e)
+			{
+				_logger.LogError(e, "An error occured while creating the match!");
+				var res = response.isSuccess = false;
+				response.message = "An error occured while creating the match!";
+				return BadRequest(response);
+			}
+
+		}
 		[HttpGet("match-details", Name = "GetMatchDetails")]
 		public ActionResult<Match> GetMatchDetails(int id)
 		{
@@ -66,7 +88,7 @@ namespace GameOnAPI.Controllers
 					return NotFound("Match is not found!");
 				}
 				//match.Participations.ForEach(p => p.User=_mapper.Map<PlayerUser>(p.User));
-				var matchDTO = _mapper.Map<MatchDTO>(match);
+				var matchDTO = _mapper.Map<LiveMatchDTO>(match);
 				return Ok(matchDTO);
 			}
 			catch (Exception ex)

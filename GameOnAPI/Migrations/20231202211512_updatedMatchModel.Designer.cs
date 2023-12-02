@@ -4,6 +4,7 @@ using GameOnAPI.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GameOnAPI.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20231202211512_updatedMatchModel")]
+    partial class updatedMatchModel
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -210,7 +213,7 @@ namespace GameOnAPI.Migrations
                         {
                             Id = "324u3943583404",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "021bd735-60af-4c0d-a62c-8dfd29b2cf6f",
+                            ConcurrencyStamp = "fd4f6843-465d-44c5-81f8-d27a28b6f88a",
                             Email = "user1@example.com",
                             EmailConfirmed = false,
                             FavoriteTeam = "Liverpool",
@@ -220,7 +223,7 @@ namespace GameOnAPI.Migrations
                             Name = "Samer Shalabi",
                             PhoneNumberConfirmed = false,
                             ProfileImageUrl = "profile1.jpg",
-                            SecurityStamp = "07453034-f2e8-4caf-b925-91f54dd1dbe8",
+                            SecurityStamp = "830cb749-3e39-4aa2-8ffc-1c4018f1ca77",
                             TwoFactorEnabled = false,
                             UserName = "Samer",
                             Weight = 70.299999999999997,
@@ -232,7 +235,7 @@ namespace GameOnAPI.Migrations
                         {
                             Id = "32ewdewd83404",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "cc9d9d12-a15f-4659-8891-74eac465e913",
+                            ConcurrencyStamp = "a5300ccd-1f55-4104-80fc-1bb72917c20d",
                             Email = "user2@example.com",
                             EmailConfirmed = false,
                             FavoriteTeam = "Barcelona",
@@ -242,7 +245,7 @@ namespace GameOnAPI.Migrations
                             Name = "Ali Hussein",
                             PhoneNumberConfirmed = false,
                             ProfileImageUrl = "profile2.jpg",
-                            SecurityStamp = "0c6505d7-c907-471c-a8d1-3581127495e2",
+                            SecurityStamp = "fa1d6b16-d758-428b-a3e9-8aefebdb1880",
                             TwoFactorEnabled = false,
                             UserName = "Ali",
                             Weight = 75.200000000000003,
@@ -254,7 +257,7 @@ namespace GameOnAPI.Migrations
                         {
                             Id = "32322432nvfvfwdewd83404",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "4b53c598-cadb-4cfe-bbd8-4f15a1569554",
+                            ConcurrencyStamp = "9d22a690-2895-430b-92bd-4e50d3444570",
                             Email = "user3@example.com",
                             EmailConfirmed = false,
                             FavoriteTeam = "Real Madrid",
@@ -264,7 +267,7 @@ namespace GameOnAPI.Migrations
                             Name = "Omar Shalabi",
                             PhoneNumberConfirmed = false,
                             ProfileImageUrl = "profile3.jpg",
-                            SecurityStamp = "216a4948-b2b3-4c07-8037-050f7affba02",
+                            SecurityStamp = "7b89ee23-4a64-4e64-bea4-87bdc651f91f",
                             TwoFactorEnabled = false,
                             UserName = "Omar",
                             Weight = 68.5,
@@ -276,7 +279,7 @@ namespace GameOnAPI.Migrations
                         {
                             Id = "3232onffenmessi8marvfwdewd83404",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "5b55be25-d938-461e-85e0-c4a0aff3ce37",
+                            ConcurrencyStamp = "f7e9acfe-0600-4bd9-b16a-9f72957cf47f",
                             Email = "user3@example.com",
                             EmailConfirmed = false,
                             FavoriteTeam = "Napoli",
@@ -286,7 +289,7 @@ namespace GameOnAPI.Migrations
                             Name = "Hussein Ali",
                             PhoneNumberConfirmed = false,
                             ProfileImageUrl = "profile4.jpg",
-                            SecurityStamp = "143d9bf3-b7fa-4917-ac20-21e0543a0e98",
+                            SecurityStamp = "eca3756c-751b-468b-a073-131e63dd5cd0",
                             TwoFactorEnabled = false,
                             UserName = "Hussein",
                             Weight = 68.5,
@@ -325,14 +328,14 @@ namespace GameOnAPI.Migrations
                     b.Property<int>("UserId")
                         .HasColumnType("int");
 
-                    b.Property<string>("UserId1")
+                    b.Property<string>("captainId")
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("FieldId");
 
-                    b.HasIndex("UserId1");
+                    b.HasIndex("captainId");
 
                     b.ToTable("Match");
 
@@ -340,34 +343,34 @@ namespace GameOnAPI.Migrations
                         new
                         {
                             Id = 3,
-                            DeadlineRequestsDateTime = new DateTime(2023, 12, 15, 12, 50, 17, 15, DateTimeKind.Local).AddTicks(8528),
-                            EndDateTime = new DateTime(2023, 12, 5, 3, 50, 17, 15, DateTimeKind.Local).AddTicks(8523),
+                            DeadlineRequestsDateTime = new DateTime(2023, 12, 15, 11, 15, 11, 932, DateTimeKind.Local).AddTicks(2539),
+                            EndDateTime = new DateTime(2023, 12, 5, 2, 15, 11, 932, DateTimeKind.Local).AddTicks(2531),
                             Featured = true,
                             FieldId = 3,
                             PlayerCount = 8,
-                            StartDateTime = new DateTime(2023, 12, 5, 0, 50, 17, 15, DateTimeKind.Local).AddTicks(8459),
+                            StartDateTime = new DateTime(2023, 12, 4, 23, 15, 11, 932, DateTimeKind.Local).AddTicks(2457),
                             UserId = 1
                         },
                         new
                         {
                             Id = 2,
-                            DeadlineRequestsDateTime = new DateTime(2023, 12, 11, 8, 50, 17, 15, DateTimeKind.Local).AddTicks(8543),
-                            EndDateTime = new DateTime(2023, 12, 6, 2, 50, 17, 15, DateTimeKind.Local).AddTicks(8539),
+                            DeadlineRequestsDateTime = new DateTime(2023, 12, 11, 7, 15, 11, 932, DateTimeKind.Local).AddTicks(2562),
+                            EndDateTime = new DateTime(2023, 12, 6, 1, 15, 11, 932, DateTimeKind.Local).AddTicks(2555),
                             Featured = true,
                             FieldId = 2,
                             PlayerCount = 12,
-                            StartDateTime = new DateTime(2023, 12, 6, 0, 50, 17, 15, DateTimeKind.Local).AddTicks(8535),
+                            StartDateTime = new DateTime(2023, 12, 5, 23, 15, 11, 932, DateTimeKind.Local).AddTicks(2549),
                             UserId = 1
                         },
                         new
                         {
                             Id = 1,
-                            DeadlineRequestsDateTime = new DateTime(2023, 12, 8, 0, 50, 17, 15, DateTimeKind.Local).AddTicks(8559),
-                            EndDateTime = new DateTime(2023, 12, 7, 2, 50, 17, 15, DateTimeKind.Local).AddTicks(8555),
+                            DeadlineRequestsDateTime = new DateTime(2023, 12, 7, 23, 15, 11, 932, DateTimeKind.Local).AddTicks(2583),
+                            EndDateTime = new DateTime(2023, 12, 7, 1, 15, 11, 932, DateTimeKind.Local).AddTicks(2577),
                             Featured = true,
                             FieldId = 1,
                             PlayerCount = 16,
-                            StartDateTime = new DateTime(2023, 12, 7, 0, 50, 17, 15, DateTimeKind.Local).AddTicks(8549),
+                            StartDateTime = new DateTime(2023, 12, 6, 23, 15, 11, 932, DateTimeKind.Local).AddTicks(2571),
                             UserId = 1
                         });
                 });
@@ -511,11 +514,11 @@ namespace GameOnAPI.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("GameOnAPI.Models.User", "User")
+                    b.HasOne("GameOnAPI.Models.User", "captain")
                         .WithMany()
-                        .HasForeignKey("UserId1");
+                        .HasForeignKey("captainId");
 
-                    b.Navigation("User");
+                    b.Navigation("captain");
 
                     b.Navigation("field");
                 });

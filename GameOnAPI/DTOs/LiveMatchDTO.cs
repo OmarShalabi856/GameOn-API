@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace GameOnAPI.DTOs
 {
-	public class MatchDTO
+	public class LiveMatchDTO
 	{
 		int Id { get; set; }
 
