@@ -20,6 +20,8 @@ public class Match
 	[Required]
 	public DateTime DeadlineRequestsDateTime { get; set; }
 
+	public DateTime CreationDateTime { get; set; }
+
 	[Required]
 	[Range(2, int.MaxValue, ErrorMessage = "Player count must be at least 2.")]
 	public int PlayerCount { get; set; }

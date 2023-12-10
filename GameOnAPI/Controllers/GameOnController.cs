@@ -57,6 +57,7 @@ namespace GameOnAPI.Controllers
 		{
 			try
 			{
+				match.CreationDateTime = DateTime.Now;
 				var matchDTO = _mapper.Map<Match>(match);
 				_db.Match.Add(matchDTO);
 				_db.SaveChanges();
@@ -70,6 +71,35 @@ namespace GameOnAPI.Controllers
 				return BadRequest(response);
 			}
 
+		}
+		[HttpGet("newest",Name ="GetNewestMatches")]
+		public ActionResult<List<Match>> GetNewestMatches()
+		{
+			try
+			{
+
+				var newMatches = _db.Match
+					.Include(x => x.field)
+					.Where(match => match.CreationDateTime < DateTime.Now.AddDays(-7))
+					.OrderBy(match=>match.CreationDateTime)
+					.ToList();
+				if (newMatches.Any())
+				{
+					response.result = newMatches;
+					return Ok(response);
+				}
+				else
+				{
+					return NoContent();
+
+				}
+				
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError(ex, "An error occurred while processing GetNewestMatches endpoint.");
+				return StatusCode(500, ex.Message);
+			}
 		}
 		[HttpGet("match-details", Name = "GetMatchDetails")]
 		public ActionResult<Match> GetMatchDetails(int id)

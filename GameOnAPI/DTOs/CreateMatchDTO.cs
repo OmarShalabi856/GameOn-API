@@ -8,6 +8,8 @@ namespace GameOnAPI.DTOs
 
 		public DateTime EndDateTime { get; set; }
 
+		public DateTime CreationDateTime { get; set; }
+
 		public DateTime DeadlineRequestsDateTime { get; set; }
 
 		public int FieldId { get; set; }
