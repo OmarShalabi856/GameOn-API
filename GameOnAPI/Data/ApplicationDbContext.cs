@@ -24,9 +24,23 @@ namespace GameOnAPI.Data
 		   .WithOne(participation => participation.Match)
 		   .OnDelete(DeleteBehavior.Cascade);
 
-			modelBuilder.Entity<IdentityUserLogin<string>>().HasNoKey();
-			modelBuilder.Entity<IdentityUserRole<string>>().HasNoKey();
-			modelBuilder.Entity<IdentityUserToken<string>>().HasNoKey();
+			base.OnModelCreating(modelBuilder);
+
+			modelBuilder.Entity<IdentityUserRole<string>>(entity =>
+			{
+
+				entity.HasKey(ur => new { ur.UserId, ur.RoleId });
+
+			});
+
+
+			modelBuilder.Entity<User>().ToTable("User");
+			modelBuilder.Entity<IdentityRole<string>>().ToTable("Roles");
+			modelBuilder.Entity<IdentityUserRole<string>>().ToTable("UserRoles");
+
+			//modelBuilder.Entity<IdentityUserLogin<string>>().HasNoKey();
+			//modelBuilder.Entity<IdentityUserRole<string>>().HasNoKey();
+			//modelBuilder.Entity<IdentityUserToken<string>>().HasNoKey();
 
 			modelBuilder.Entity<User>().HasData(
 				new User

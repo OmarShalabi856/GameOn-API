@@ -3,6 +3,7 @@ using GameOnAPI.Data;
 using GameOnAPI.DTOs;
 using GameOnAPI.Models;
 using GameOnAPI.Responses;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -28,32 +29,51 @@ namespace GameOnAPI.Services
 
 		public async Task<bool> AssignRole(string email, string roleName)
 		{
-			var user = await _userManager.FindByEmailAsync(email);
-
-			if (user != null && _userManager != null && _roleManager != null)
+			try
 			{
-				if (!await _roleManager.RoleExistsAsync(roleName))
+				var user = await _userManager.FindByEmailAsync(email);
+
+				if (user != null && _userManager != null && _roleManager != null)
 				{
-					await _roleManager.CreateAsync(new IdentityRole(roleName));
+					if (!await _roleManager.RoleExistsAsync(roleName))
+					{
+						await _roleManager.CreateAsync(new IdentityRole(roleName));
+					}
+
+					var role = await _roleManager.FindByNameAsync(roleName);
+
+					if (role != null)
+					{
+						if (!await _userManager.IsInRoleAsync(user, roleName))
+						{
+							await _userManager.AddToRoleAsync(user, roleName);
+							return true;
+						}
+						else
+						{
+							Console.WriteLine($"User {email} is already assigned to role {roleName}.");
+							return false;
+						}
+					}
+					else
+					{
+						Console.WriteLine($"Role {roleName} not found.");
+						return false;
+					}
 				}
-
-				try
+				else
 				{
-
-					await _userManager.AddToRoleAsync(user, "ADMIN");
-
-
-					return true;
-				}
-				catch (Exception ex)
-				{
-					Console.WriteLine(ex.Message);
+					Console.WriteLine("User manager, role manager, or user is null.");
 					return false;
 				}
 			}
-
-			return false;
+			catch (Exception ex)
+			{
+				Console.WriteLine($"Error assigning role: {ex.Message}");
+				return false;
+			}
 		}
+
 
 
 
@@ -89,12 +109,20 @@ namespace GameOnAPI.Services
 
 		public async Task<bool> CheckRegEmail(string email)
 		{
-			var userAlreadyPresent = await _userManager.FindByEmailAsync(email);
-			if (userAlreadyPresent != null)
+			try
 			{
-				return true;
+				var userAlreadyPresent = await _userManager.FindByEmailAsync(email);
+				if (userAlreadyPresent != null)
+				{
+					return true;
+				}
+				return false;
 			}
-			return false;
+			catch(Exception ex)
+			{
+				return false;
+			}
+			
 		}
 
 

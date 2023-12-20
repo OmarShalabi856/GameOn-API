@@ -21,8 +21,10 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 builder.Services.AddSwaggerGen(options => options.CustomSchemaIds(type => type.FullName));
 
 builder.Services.AddIdentity<User, IdentityRole>()
+	.AddRoles<IdentityRole>()
 	.AddEntityFrameworkStores<ApplicationDbContext>()
 	.AddDefaultTokenProviders();
+
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 	.AddMicrosoftIdentityWebApi(builder.Configuration.GetSection("AzureAd"));
@@ -51,6 +53,7 @@ builder.Services.AddCors(options =>
 	});
 });
 
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -70,4 +73,5 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers(); 
+
 app.Run();

@@ -22,7 +22,9 @@ namespace GameOnAPI.Controllers
 		[HttpPost("register")]
 		public async Task<IActionResult> Register([FromBody] RegisterUser regUser)
 		{
-			string errors = await authService.RegisterUserAsync(regUser);	
+			string errors = await authService.RegisterUserAsync(regUser);
+
+			await authService.AssignRole(regUser.Email, "TEST");
 			if (!string.IsNullOrEmpty(errors))
 			{
 				response.isSuccess = false;
