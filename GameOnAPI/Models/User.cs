@@ -22,6 +22,7 @@ namespace GameOnAPI.Models
 		public string ProfileImageUrl { get; set; } = "";
 		public List<MatchParticipation> MatchParticipations { get; set; }
 
+		public List<UserRoles> userRoles { get;set; }	
 		public string Name { get; set; }
 
 		public enum Position

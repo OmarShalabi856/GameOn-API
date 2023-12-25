@@ -9,6 +9,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Identity.Web;
 using Microsoft.Owin.Security;
 using Microsoft.AspNet.Identity;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,7 +20,12 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 	options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
 
-builder.Services.AddSwaggerGen(options => options.CustomSchemaIds(type => type.FullName));
+builder.Services.AddSwaggerGen(options =>
+{
+options.CustomSchemaIds(type => type.FullName);
+options.AddSecurityDefinition("oauth2",new Microsoft.OpenApi.Models.OpenApiSecurityScheme());	
+
+});
 
 builder.Services.AddIdentity<User, IdentityRole>()
 	.AddRoles<IdentityRole>()
@@ -26,10 +33,28 @@ builder.Services.AddIdentity<User, IdentityRole>()
 	.AddDefaultTokenProviders();
 
 
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-	.AddMicrosoftIdentityWebApi(builder.Configuration.GetSection("AzureAd"));
+builder.Services.AddAuthentication(options =>
+{
+	options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+	options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+	options.TokenValidationParameters = new TokenValidationParameters
+	{
+		ValidateIssuer = true,
+		ValidateAudience = true,
+		ValidateLifetime = true,
+		ValidateIssuerSigningKey = true,
+		ValidIssuer = builder.Configuration["ApiSettings:JWTOptions:Issuer"],
+		ValidAudience = builder.Configuration["ApiSettings:JWTOptions:Audience"],
+		IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["ApiSettings:JWTOptions:Secret"]))
+	};
+});
 
-builder.Services.AddScoped<IJWTTokenGenerator, JWTTokenGenerator>();
+
+
+builder.Services.AddScoped<IjwtTokenGenerator, jwtTokenGenerator>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 
 builder.Services.Configure<JWTOptions>(builder.Configuration.GetSection("ApiSettings:JWTOptions"));

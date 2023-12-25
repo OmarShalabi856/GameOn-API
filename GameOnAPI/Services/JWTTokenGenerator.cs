@@ -10,36 +10,47 @@ using Microsoft.Extensions.Options;
 
 namespace GameOnAPI.Services
 {
-	public class JWTTokenGenerator : IJWTTokenGenerator
+	public class jwtTokenGenerator : IjwtTokenGenerator
 	{
 		private readonly JWTOptions _options;
-		public JWTTokenGenerator(IOptions<JWTOptions> options)
+		private const string CustomRolesClaimType = "roles";
+
+		public jwtTokenGenerator(IOptions<JWTOptions> options)
 		{
 			_options = options.Value;
 
 		}
-		public string GenerateToken(LoginUser user)
+		public string GenerateToken(User user, List<string> roles)
 		{
-			var tokenHadler = new JwtSecurityTokenHandler();
-
-			var key = Encoding.ASCII.GetBytes(_options.secret);
-			var claimList = new List<Claim>()
+			try
 			{
-				new Claim(JwtRegisteredClaimNames.Email,user.Email),
+				var tokenHadler = new JwtSecurityTokenHandler();
+
+				var key = Encoding.ASCII.GetBytes(_options.secret);
+				var claims = new List<Claim>()
+			{
+				new Claim(ClaimTypes.Email,user.Email),
 			};
 
-			var tokenDescriptor = new SecurityTokenDescriptor
-			{
-				Audience = _options.audience,
-				Issuer = _options.issuer,
-				Subject = new ClaimsIdentity(claimList),
-				Expires = DateTime.UtcNow.AddDays(3),
-				SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
-			};
+			claims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role)));
 
-			var token = tokenHadler.CreateToken(tokenDescriptor);
-			return tokenHadler.WriteToken(token).ToString();
+				var tokenDescriptor = new SecurityTokenDescriptor
+				{
+					Audience = _options.audience,
+					Issuer = _options.issuer,
+					Subject = new ClaimsIdentity(claims),
+					Expires = DateTime.UtcNow.AddMinutes(10),
+					SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+				};
+
+				var token = tokenHadler.CreateToken(tokenDescriptor);
+				return tokenHadler.WriteToken(token).ToString();
+			}
+			catch(Exception ex)
+			{
+				Console.WriteLine(ex.Message);
+				return string.Empty;	
+			}
 		}
-
 	}
 }

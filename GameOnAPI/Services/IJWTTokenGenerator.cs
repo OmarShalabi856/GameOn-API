@@ -1,9 +1,10 @@
 ﻿using GameOnAPI.DTOs;
+using GameOnAPI.Models;
 
 namespace GameOnAPI.Services
 {
-	public interface IJWTTokenGenerator
+	public interface IjwtTokenGenerator
 	{
-		public string GenerateToken(LoginUser user);	
+		public string GenerateToken(User user,List<string> roles);	
 	}
 }

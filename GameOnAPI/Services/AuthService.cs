@@ -16,9 +16,9 @@ namespace GameOnAPI.Services
 		private readonly UserManager<User> _userManager;
 		private readonly RoleManager<IdentityRole> _roleManager;
 		private readonly IMapper _mapper;
-		private readonly IJWTTokenGenerator _tokenGenerator;
+		private readonly IjwtTokenGenerator _tokenGenerator;
 
-		public AuthService(ApplicationDbContext db, UserManager<User> userManager, RoleManager<IdentityRole> roleManager, IMapper mapper, IJWTTokenGenerator tokenGenerator)
+		public AuthService(ApplicationDbContext db, UserManager<User> userManager, RoleManager<IdentityRole> roleManager, IMapper mapper, IjwtTokenGenerator tokenGenerator)
 		{
 			_db = db;
 			_userManager = userManager;
@@ -128,16 +128,26 @@ namespace GameOnAPI.Services
 
 		async Task<LoginResponse> IAuthService.LoginUserAsync(LoginUser user)
 		{
-			var _user = _db.User.FirstOrDefault(x => x.Email.ToLower() == user.Email.ToLower());
-			bool isValid = await _userManager.CheckPasswordAsync(_user, user.Password);
-			if (user is null || !isValid)
+			try
 			{
-				return new LoginResponse { LoginUser = null, token = "" };
-			}
+				var _user = _db.Users
+				.FirstOrDefault(x => x.Email.ToLower() == user.Email.ToLower());
+				bool isValid = await _userManager.CheckPasswordAsync(_user, user.Password);
+				if (user is null || !isValid)
+				{
+					return new LoginResponse { LoginUser = null, role = null, token = "" };
+				}
 
-			LoginUser responseUser = _mapper.Map<LoginUser>(user);
-			string token = _tokenGenerator.GenerateToken(responseUser);
-			return new LoginResponse { LoginUser = responseUser, token = token };
+				LoginUser responseUser = _mapper.Map<LoginUser>(user);
+				var roles = await _userManager.GetRolesAsync(_user);
+				string token = _tokenGenerator.GenerateToken(_user, roles.ToList()) ;
+				return new LoginResponse { LoginUser = responseUser, role = roles.ToList(), token = token };
+			}
+			catch(Exception ex)
+			{
+				return null;
+			}
+			
 		}
 
 		public enum role

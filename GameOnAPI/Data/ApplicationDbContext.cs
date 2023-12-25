@@ -19,28 +19,19 @@ namespace GameOnAPI.Data
 
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
+
+			base.OnModelCreating(modelBuilder);
+
 			modelBuilder.Entity<Match>()
 		   .HasMany(match => match.Participations)
 		   .WithOne(participation => participation.Match)
 		   .OnDelete(DeleteBehavior.Cascade);
-
-			base.OnModelCreating(modelBuilder);
-
-			modelBuilder.Entity<IdentityUserRole<string>>(entity =>
-			{
-
-				entity.HasKey(ur => new { ur.UserId, ur.RoleId });
-
-			});
 
 
 			modelBuilder.Entity<User>().ToTable("User");
 			modelBuilder.Entity<IdentityRole<string>>().ToTable("Roles");
 			modelBuilder.Entity<IdentityUserRole<string>>().ToTable("UserRoles");
 
-			//modelBuilder.Entity<IdentityUserLogin<string>>().HasNoKey();
-			//modelBuilder.Entity<IdentityUserRole<string>>().HasNoKey();
-			//modelBuilder.Entity<IdentityUserToken<string>>().HasNoKey();
 
 			modelBuilder.Entity<User>().HasData(
 				new User
@@ -190,6 +181,14 @@ namespace GameOnAPI.Data
 
 				}
 				);
+
+			ConfigureUserRolesKey(modelBuilder);
+		}
+
+		private void ConfigureUserRolesKey(ModelBuilder modelBuilder)
+		{
+			modelBuilder.Entity<IdentityUserRole<string>>()
+				.HasKey(ur => new { ur.UserId, ur.RoleId });
 		}
 
 	} 

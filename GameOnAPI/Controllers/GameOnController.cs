@@ -101,6 +101,7 @@ namespace GameOnAPI.Controllers
 				return StatusCode(500, ex.Message);
 			}
 		}
+		[Authorize(Roles = "Admin")]
 		[HttpGet("match-details", Name = "GetMatchDetails")]
 		public ActionResult<Match> GetMatchDetails(int id)
 		{

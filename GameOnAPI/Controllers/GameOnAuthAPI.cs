@@ -24,7 +24,7 @@ namespace GameOnAPI.Controllers
 		{
 			string errors = await authService.RegisterUserAsync(regUser);
 
-			await authService.AssignRole(regUser.Email, "TEST");
+			await authService.AssignRole(regUser.Email, "Admin");
 			if (!string.IsNullOrEmpty(errors))
 			{
 				response.isSuccess = false;
