@@ -135,7 +135,7 @@ namespace GameOnAPI.Services
 				bool isValid = await _userManager.CheckPasswordAsync(_user, user.Password);
 				if (user is null || !isValid)
 				{
-					return new LoginResponse { LoginUser = null, role = null, token = "" };
+					return new LoginResponse { LoginUser = null, role = null, token = "",message="User not found!" };
 				}
 
 				LoginUser responseUser = _mapper.Map<LoginUser>(user);

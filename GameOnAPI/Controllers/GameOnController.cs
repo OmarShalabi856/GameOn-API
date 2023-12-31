@@ -72,7 +72,33 @@ namespace GameOnAPI.Controllers
 			}
 
 		}
-		[HttpGet("newest",Name ="GetNewestMatches")]
+		[HttpGet("matches", Name = "GetMatches")]
+		public async Task<ActionResult<List<Match>>> GetMatches()
+		{
+			try
+			{
+				var matches = _db.Match
+					.Include(m=>m.field)
+					.Include(m => m.User)
+					.Where(m => m.DeadlineRequestsDateTime > DateTime.Now)
+					.ToList();
+
+				response.result = matches;
+				return Ok(response);
+
+
+			}
+			catch (Exception ex)
+			{
+				response.isSuccess = false;
+				response.message = "An error occured while retrieving the matches!";
+				return BadRequest(response);
+			}
+
+		}
+
+
+		[HttpGet("newest", Name = "GetNewestMatches")]
 		public ActionResult<List<Match>> GetNewestMatches()
 		{
 			try
@@ -81,7 +107,7 @@ namespace GameOnAPI.Controllers
 				var newMatches = _db.Match
 					.Include(x => x.field)
 					.Where(match => match.CreationDateTime < DateTime.Now.AddDays(-7))
-					.OrderBy(match=>match.CreationDateTime)
+					.OrderBy(match => match.CreationDateTime)
 					.ToList();
 				if (newMatches.Any())
 				{
@@ -93,7 +119,7 @@ namespace GameOnAPI.Controllers
 					return NoContent();
 
 				}
-				
+
 			}
 			catch (Exception ex)
 			{

@@ -17,6 +17,7 @@ namespace GameOnAPI
 				config.CreateMap<Match, CreateMatchDTO>();
 				config.CreateMap<CreateMatchDTO, Match>();
 				config.CreateMap<User, LoginUser>();
+				config.CreateMap<RegisterUser, LoginUser>();
 			}
 
 			);

@@ -1,4 +1,5 @@
-﻿using GameOnAPI.DTOs;
+﻿using AutoMapper;
+using GameOnAPI.DTOs;
 using GameOnAPI.Responses;
 using GameOnAPI.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -11,10 +12,12 @@ namespace GameOnAPI.Controllers
 	{
 
 		private readonly IAuthService authService;
+		private readonly IMapper _mapper;
 		protected Response response;
-		public GameOnAuthAPI(IAuthService authService)
+		public GameOnAuthAPI(IAuthService authService, IMapper mapper)
 		{
 			this.authService = authService;
+			_mapper = mapper;
 			response = new Response();	
 		}
 
@@ -24,7 +27,7 @@ namespace GameOnAPI.Controllers
 		{
 			string errors = await authService.RegisterUserAsync(regUser);
 
-			await authService.AssignRole(regUser.Email, "Admin");
+			await authService.AssignRole(regUser.Email, "User");
 			if (!string.IsNullOrEmpty(errors))
 			{
 				response.isSuccess = false;
@@ -32,6 +35,9 @@ namespace GameOnAPI.Controllers
 				return BadRequest(response);
 
 			}
+			LoginUser loginUser = _mapper.Map<LoginUser>(regUser);	
+			LoginResponse lr = await authService.LoginUserAsync(loginUser);
+			response.result = lr;
 			return Ok(response);	
 		}
 

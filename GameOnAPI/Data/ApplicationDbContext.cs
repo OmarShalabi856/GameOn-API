@@ -100,14 +100,55 @@ namespace GameOnAPI.Data
 			modelBuilder.Entity<Match>().HasData(
 				new Match
 				{
+					Id = 13,
+					StartDateTime = DateTime.Now.AddDays(2),
+					EndDateTime = DateTime.Now.AddDays(2).AddHours(3),
+					DeadlineRequestsDateTime = DateTime.Now.AddHours(300),
+					UserId = "069a5b6e-deb5-4dcc-bfd7-92dce2aea524",
+					FieldId = 3,
+					PlayerCount = 8,
+					Featured = true,
+					Notes = "",
+					feePerPlayer = 7
+
+				},
+				new Match
+				{
+					Id = 12,
+					EndDateTime = DateTime.Now.AddDays(3).AddHours(2),
+					DeadlineRequestsDateTime = DateTime.Now.AddHours(200),
+					FieldId = 2,
+					UserId = "141b7af4-e40a-4330-b7cf-9b85cb579c7c",
+					PlayerCount = 12,
+					Featured = true,
+					Notes="",
+					feePerPlayer=10
+				},
+				new Match
+				{
+					Id = 10,
+					StartDateTime = DateTime.Now.AddDays(4),
+					EndDateTime = DateTime.Now.AddDays(4).AddHours(2),
+					DeadlineRequestsDateTime = DateTime.Now.AddHours(120),
+					FieldId = 1,
+					UserId = "141b7af4-e40a-4330-b7cf-9b85cb579c7c",
+					PlayerCount = 16,
+					Featured = true,
+					Notes = "",
+					feePerPlayer = 12
+				},
+				new Match
+				{
 					Id = 3,
 					StartDateTime = DateTime.Now.AddDays(2),
 					EndDateTime = DateTime.Now.AddDays(2).AddHours(3),
 					DeadlineRequestsDateTime = DateTime.Now.AddHours(300),
-					UserId = 1,
+					UserId = "069a5b6e-deb5-4dcc-bfd7-92dce2aea524",
 					FieldId = 3,
 					PlayerCount = 8,
-					Featured = true
+					Featured = true,
+					Notes = "",
+					feePerPlayer = 7
 
 				},
 				new Match
@@ -117,9 +158,11 @@ namespace GameOnAPI.Data
 					EndDateTime = DateTime.Now.AddDays(3).AddHours(2),
 					DeadlineRequestsDateTime = DateTime.Now.AddHours(200),
 					FieldId = 2,
-					UserId = 1,
+					UserId = "141b7af4-e40a-4330-b7cf-9b85cb579c7c",
 					PlayerCount = 12,
 					Featured = true,
+					Notes = "",
+					feePerPlayer = 10
 				},
 				new Match
 				{
@@ -128,9 +171,11 @@ namespace GameOnAPI.Data
 					EndDateTime = DateTime.Now.AddDays(4).AddHours(2),
 					DeadlineRequestsDateTime = DateTime.Now.AddHours(120),
 					FieldId = 1,
-					UserId = 1,
+					UserId = "141b7af4-e40a-4330-b7cf-9b85cb579c7c",
 					PlayerCount = 16,
-					Featured = true
+					Featured = true,
+					Notes = "",
+					feePerPlayer = 12
 				}
 
 			);

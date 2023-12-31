@@ -10,8 +10,11 @@ public class Match
 	public int Id { get; set; }
 
 	[Required]
-	public int UserId { get; set; }
-	public User User { get; set; } 
+	//public int UserId { get; set; }
+	//public User User { get; set; }
+
+	public string UserId { get; set; }
+	public User User { get; set; }
 
 	[Required]
 	public DateTime StartDateTime { get; set; }
@@ -25,6 +28,10 @@ public class Match
 	[Required]
 	[Range(2, int.MaxValue, ErrorMessage = "Player count must be at least 2.")]
 	public int PlayerCount { get; set; }
+
+	public string Notes { get; set; }
+
+	public double feePerPlayer { get; set; }	
 
 	public int FieldId { get; set; }
 
