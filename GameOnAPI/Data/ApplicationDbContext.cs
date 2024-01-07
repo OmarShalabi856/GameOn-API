@@ -48,6 +48,7 @@ namespace GameOnAPI.Data
 					Weight = 70.3,
 					Location = "Bchamoun",
 					ProfileImageUrl = "profile1.jpg"
+					
 				},
 				new User
 				{
@@ -96,6 +97,7 @@ namespace GameOnAPI.Data
 					Weight = 68.5,
 					Location = "Aramoun",
 					ProfileImageUrl = "profile4.jpg"
+
 				});
 			modelBuilder.Entity<Match>().HasData(
 				new Match
@@ -109,7 +111,10 @@ namespace GameOnAPI.Data
 					PlayerCount = 8,
 					Featured = true,
 					Notes = "",
-					feePerPlayer = 7
+					feePerPlayer = 7,
+					AgeGroup = "Under 10",
+					Gender = "Male",
+					City = "Beirut"
 
 				},
 				new Match
@@ -122,7 +127,10 @@ namespace GameOnAPI.Data
 					PlayerCount = 12,
 					Featured = true,
 					Notes="",
-					feePerPlayer=10
+					feePerPlayer=10,
+					AgeGroup= "Under10",
+					Gender="Male",
+					City="Beirut"
 				},
 				new Match
 				{
@@ -135,7 +143,10 @@ namespace GameOnAPI.Data
 					PlayerCount = 16,
 					Featured = true,
 					Notes = "",
-					feePerPlayer = 12
+					feePerPlayer = 12,
+					AgeGroup = "10-15",
+					Gender = "Female",
+					City = "Sidon"
 				},
 				new Match
 				{
@@ -148,7 +159,10 @@ namespace GameOnAPI.Data
 					PlayerCount = 8,
 					Featured = true,
 					Notes = "",
-					feePerPlayer = 7
+					feePerPlayer = 7,
+					AgeGroup = "18+",
+					Gender = "Male",
+					City = "Jezzine"
 
 				},
 				new Match
@@ -162,7 +176,10 @@ namespace GameOnAPI.Data
 					PlayerCount = 12,
 					Featured = true,
 					Notes = "",
-					feePerPlayer = 10
+					feePerPlayer = 10,
+					AgeGroup = "18+",
+					Gender = "Male",
+					City = "Jezzine"
 				},
 				new Match
 				{
@@ -175,7 +192,10 @@ namespace GameOnAPI.Data
 					PlayerCount = 16,
 					Featured = true,
 					Notes = "",
-					feePerPlayer = 12
+					feePerPlayer = 12,
+					AgeGroup = "10-15",
+					Gender = "Female",
+					City = "Sidon"
 				}
 
 			);

@@ -35,7 +35,13 @@ public class Match
 
 	public int FieldId { get; set; }
 
-	public bool Featured { get; set; }	
+	public string City { get; set; }
+
+	public bool Featured { get; set; }
+
+	public string Gender { get; set; }
+
+	public string AgeGroup { get; set; }
 	
 	public Field field { get; set; }
 	public List<MatchParticipation> Participations { get; set; }	

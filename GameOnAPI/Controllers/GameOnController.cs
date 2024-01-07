@@ -73,15 +73,17 @@ namespace GameOnAPI.Controllers
 
 		}
 		[HttpGet("matches", Name = "GetMatches")]
-		public async Task<ActionResult<List<Match>>> GetMatches()
+		public async Task<ActionResult<List<Match>>> GetMatches([FromQuery] MatchFilters filters)
 		{
 			try
 			{
 				var matches = _db.Match
-					.Include(m=>m.field)
+					.Include(m => m.field)
 					.Include(m => m.User)
 					.Where(m => m.DeadlineRequestsDateTime > DateTime.Now)
 					.ToList();
+
+				matches = ApplyFilters(matches, filters);
 
 				response.result = matches;
 				return Ok(response);
@@ -97,6 +99,13 @@ namespace GameOnAPI.Controllers
 
 		}
 
+		private List<Match> ApplyFilters(List<Match> matches, MatchFilters filters)
+		{
+			return matches.Where(match => (filters.City == null || match.City == filters.City) &&
+			(filters.AgeGroup == null && match.AgeGroup == filters.AgeGroup) &&
+			(filters.Gender == null && match.Gender == filters.Gender) &&
+			(filters.FreeMatchesOnly == null || filters.FreeMatchesOnly ? match.feePerPlayer == 0 : match.feePerPlayer >= 0)).ToList();
+		}
 
 		[HttpGet("newest", Name = "GetNewestMatches")]
 		public ActionResult<List<Match>> GetNewestMatches()
@@ -190,5 +199,14 @@ namespace GameOnAPI.Controllers
 			}
 		}
 
+	}
+
+	public class MatchFilters
+	{
+		public string? AgeGroup { get; set; }
+		public string? City { get; set; }
+		public string? Gender { get; set; }
+
+		public bool FreeMatchesOnly { get; set; }
 	}
 }
