@@ -10,9 +10,6 @@ public class Match
 	public int Id { get; set; }
 
 	[Required]
-	//public int UserId { get; set; }
-	//public User User { get; set; }
-
 	public string UserId { get; set; }
 	public User User { get; set; }
 
@@ -34,8 +31,6 @@ public class Match
 	public double feePerPlayer { get; set; }	
 
 	public int FieldId { get; set; }
-
-	public string City { get; set; }
 
 	public bool Featured { get; set; }
 

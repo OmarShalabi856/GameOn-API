@@ -17,6 +17,8 @@ namespace GameOnAPI.Data
 		public DbSet<Field> Field { get; set; }
 		public DbSet<MatchParticipation> MatchParticipation { get; set; }
 
+		public DbSet<Invitation> Invitation { get; set; }
+
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
 
@@ -26,6 +28,17 @@ namespace GameOnAPI.Data
 		   .HasMany(match => match.Participations)
 		   .WithOne(participation => participation.Match)
 		   .OnDelete(DeleteBehavior.Cascade);
+
+			modelBuilder.Entity<Invitation>()
+			.HasOne(invitation => invitation.MatchCaptain)
+			.WithMany()
+			.HasForeignKey(invitation => invitation.MatchCaptainId);
+
+			modelBuilder.Entity<Invitation>()
+				.HasOne(invitation => invitation.InvitedPlayer)
+				.WithMany()
+				.HasForeignKey(invitation => invitation.InvitedPlayerId);
+
 
 
 			modelBuilder.Entity<User>().ToTable("User");
@@ -114,7 +127,6 @@ namespace GameOnAPI.Data
 					feePerPlayer = 7,
 					AgeGroup = "Under 10",
 					Gender = "Male",
-					City = "Beirut"
 
 				},
 				new Match
@@ -130,7 +142,7 @@ namespace GameOnAPI.Data
 					feePerPlayer=10,
 					AgeGroup= "Under10",
 					Gender="Male",
-					City="Beirut"
+
 				},
 				new Match
 				{
@@ -146,7 +158,6 @@ namespace GameOnAPI.Data
 					feePerPlayer = 12,
 					AgeGroup = "10-15",
 					Gender = "Female",
-					City = "Sidon"
 				},
 				new Match
 				{
@@ -162,7 +173,6 @@ namespace GameOnAPI.Data
 					feePerPlayer = 7,
 					AgeGroup = "18+",
 					Gender = "Male",
-					City = "Jezzine"
 
 				},
 				new Match
@@ -179,7 +189,6 @@ namespace GameOnAPI.Data
 					feePerPlayer = 10,
 					AgeGroup = "18+",
 					Gender = "Male",
-					City = "Jezzine"
 				},
 				new Match
 				{
@@ -195,7 +204,6 @@ namespace GameOnAPI.Data
 					feePerPlayer = 12,
 					AgeGroup = "10-15",
 					Gender = "Female",
-					City = "Sidon"
 				}
 
 			);

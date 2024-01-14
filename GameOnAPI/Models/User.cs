@@ -22,6 +22,8 @@ namespace GameOnAPI.Models
 		public string ProfileImageUrl { get; set; } = "";
 		public List<MatchParticipation> MatchParticipations { get; set; }
 
+		public List<Invitation> Invitations { get; set; }
+
 		public List<UserRoles> userRoles { get;set; }	
 		public string Name { get; set; }
 

@@ -53,14 +53,20 @@ namespace GameOnAPI.Controllers
 		}
 
 		[HttpPost("create-match", Name = "CreateMatch")]
-		public ActionResult<Response> CreateMatch(CreateMatchDTO match)
+		public async Task<ActionResult<Response>> CreateMatch(CreateMatchDTO match)
 		{
 			try
 			{
 				match.CreationDateTime = DateTime.Now;
 				var matchDTO = _mapper.Map<Match>(match);
+
+				matchDTO.UserId = _db.User
+					.Where(u => u.Email == match.Email)
+					.Select(u => u.Id)
+					.FirstOrDefault();
+
 				_db.Match.Add(matchDTO);
-				_db.SaveChanges();
+				await _db.SaveChangesAsync();
 				return Ok(response);
 			}
 			catch (Exception e)
@@ -77,11 +83,18 @@ namespace GameOnAPI.Controllers
 		{
 			try
 			{
+
 				var matches = _db.Match
 					.Include(m => m.field)
 					.Include(m => m.User)
 					.Where(m => m.DeadlineRequestsDateTime > DateTime.Now)
 					.ToList();
+
+				if (filters.UserEmail != null && filters.UserId == null)
+					filters.UserId = _db.Users
+						.Where(u => u.Email == filters.UserEmail)
+						.Select(u => u.Id)
+						.FirstOrDefault();
 
 				matches = ApplyFilters(matches, filters);
 
@@ -101,10 +114,11 @@ namespace GameOnAPI.Controllers
 
 		private List<Match> ApplyFilters(List<Match> matches, MatchFilters filters)
 		{
-			return matches.Where(match => (filters.City == null || match.City == filters.City) &&
-			(filters.AgeGroup == null && match.AgeGroup == filters.AgeGroup) &&
-			(filters.Gender == null && match.Gender == filters.Gender) &&
-			(filters.FreeMatchesOnly == null || filters.FreeMatchesOnly ? match.feePerPlayer == 0 : match.feePerPlayer >= 0)).ToList();
+			return matches.Where(match => (filters.City == null || match.field.Location == filters.City) &&
+			(filters.AgeGroup == null || match.AgeGroup == filters.AgeGroup) &&
+			(filters.Gender == null || match.Gender == filters.Gender) &&
+			(filters.FreeMatchesOnly == null || filters.FreeMatchesOnly ? match.feePerPlayer == 0 : match.feePerPlayer >= 0) && filters.UserId == null || filters.UserId == match.UserId)
+				.ToList();
 		}
 
 		[HttpGet("newest", Name = "GetNewestMatches")]
@@ -112,7 +126,6 @@ namespace GameOnAPI.Controllers
 		{
 			try
 			{
-
 				var newMatches = _db.Match
 					.Include(x => x.field)
 					.Where(match => match.CreationDateTime < DateTime.Now.AddDays(-7))
@@ -163,6 +176,25 @@ namespace GameOnAPI.Controllers
 				return StatusCode(500, "An error occurred while processing your request.");
 			}
 		}
+		[HttpPost("send-invite")]
+		public async Task<ActionResult<Response>> SendMatchInvite([FromBody] Invitation matchInvitation)
+		{
+
+
+			try
+			{
+				_db.Invitation.Add(matchInvitation);
+				await _db.SaveChangesAsync();
+				return response;
+			}
+			catch (Exception ex)
+			{
+				response.message = ex.Message;
+				response.isSuccess = false;
+				return BadRequest(response);
+			}
+		}
+
 		[HttpGet("fields")]
 		public ActionResult<Field> GetFields(int? id)
 		{
@@ -208,5 +240,7 @@ namespace GameOnAPI.Controllers
 		public string? Gender { get; set; }
 
 		public bool FreeMatchesOnly { get; set; }
+		public string? UserEmail { get; set; }
+		public string? UserId { get; set; }
 	}
 }
