@@ -177,13 +177,21 @@ namespace GameOnAPI.Controllers
 			}
 		}
 		[HttpPost("send-invite")]
-		public async Task<ActionResult<Response>> SendMatchInvite([FromBody] Invitation matchInvitation)
+		public async Task<ActionResult<Response>> SendMatchInvite([FromBody] InvitationDTO matchInvitation)
 		{
-
-
 			try
 			{
-				_db.Invitation.Add(matchInvitation);
+				Invitation modelInvitation = _mapper.Map<Invitation>(matchInvitation);
+				string matchCaptainId = _db.User.Where(u => u.Email == matchInvitation.MatchCaptainEmail).Select(u => u.Id).FirstOrDefault();
+				string invitedPlayerId = _db.User.Where(u => u.Email == matchInvitation.InvitedPlayerEmail).Select(u => u.Id).FirstOrDefault();
+				Match match = _db.Match.Where(u => u.Id == matchInvitation.MatchId).FirstOrDefault();
+				modelInvitation.ExpiryDate = match.DeadlineRequestsDateTime;
+				modelInvitation.Status = "Pending";
+				modelInvitation.InvitedPlayerId = invitedPlayerId;
+				modelInvitation.MatchCaptainId = matchCaptainId;
+				//modelInvitation.ExpiryDate==
+
+				_db.Invitation.Add(modelInvitation);
 				await _db.SaveChangesAsync();
 				return response;
 			}
