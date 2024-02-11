@@ -11,6 +11,8 @@ namespace GameOnAPI.Models
 		public int MatchId { get; set; }
 		public Match Match { get; set; }
 		public User.Position position { get; set; }
+		public double xPosition { get; set; }
+		public double yPosition { get; set; }
 		public Team TeamPlayingFor { get; set; }
 		[Range(1, 10, ErrorMessage = "Rating should be between 1 and 10")]
 		public double Rating { get; set; }

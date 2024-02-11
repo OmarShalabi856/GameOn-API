@@ -6,7 +6,7 @@ namespace GameOnAPI.DTOs
 {
 	public class LiveMatchDTO
 	{
-		int Id { get; set; }
+		public string userId { get; set; }
 
 		public DateTime StartDateTime { get; set; }
 

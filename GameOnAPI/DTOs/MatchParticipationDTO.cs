@@ -9,6 +9,8 @@ namespace GameOnAPI.DTOs
 		public PlayerUser User { get; set; } 
 		public int MatchId { get; set; }
 		public int Position { get; set; } 
+		public double xPosition { get; set; }
+		public double yPosition { get; set; }
 		public Team TeamPlayingFor { get; set; }
 		public double Rating { get; set; }
 	}

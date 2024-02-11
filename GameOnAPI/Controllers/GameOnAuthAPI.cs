@@ -63,7 +63,7 @@ namespace GameOnAPI.Controllers
 			{
 				response.isSuccess = false;
 				response.message = "This Email Already Exists!";
-				return BadRequest(response);
+				return Ok(response);
 			}
 			response.message = "";
 			return Ok(response);

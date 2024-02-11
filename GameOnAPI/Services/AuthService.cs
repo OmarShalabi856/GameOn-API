@@ -141,7 +141,7 @@ namespace GameOnAPI.Services
 				LoginUser responseUser = _mapper.Map<LoginUser>(user);
 				var roles = await _userManager.GetRolesAsync(_user);
 				string token = _tokenGenerator.GenerateToken(_user, roles.ToList()) ;
-				return new LoginResponse { LoginUser = responseUser, role = roles.ToList(), token = token };
+				return new LoginResponse {userId= _user.Id, LoginUser = responseUser, role = roles.ToList(), token = token };
 			}
 			catch(Exception ex)
 			{

@@ -39,6 +39,17 @@ namespace GameOnAPI.Data
 				.WithMany()
 				.HasForeignKey(invitation => invitation.InvitedPlayerId);
 
+			modelBuilder.Entity<Match>()
+			.HasOne(match => match.TeamOneCaptain)
+			.WithMany()
+			.HasForeignKey(match => match.TeamOneCaptainId)
+			.OnDelete(DeleteBehavior.NoAction);
+
+			modelBuilder.Entity<Match>()
+			.HasOne(match => match.TeamTwoCaptain)
+			.WithMany()
+			.HasForeignKey(match => match.TeamTwoCaptainId)
+			.OnDelete(DeleteBehavior.NoAction);
 
 
 			modelBuilder.Entity<User>().ToTable("User");
@@ -119,7 +130,8 @@ namespace GameOnAPI.Data
 					StartDateTime = DateTime.Now.AddDays(2),
 					EndDateTime = DateTime.Now.AddDays(2).AddHours(3),
 					DeadlineRequestsDateTime = DateTime.Now.AddHours(300),
-					UserId = "069a5b6e-deb5-4dcc-bfd7-92dce2aea524",
+					TeamOneCaptainId = "069a5b6e-deb5-4dcc-bfd7-92dce2aea524",
+					TeamTwoCaptainId = "141b7af4-e40a-4330-b7cf-9b85cb579c7c",
 					FieldId = 3,
 					PlayerCount = 8,
 					Featured = true,
@@ -135,7 +147,8 @@ namespace GameOnAPI.Data
 					EndDateTime = DateTime.Now.AddDays(3).AddHours(2),
 					DeadlineRequestsDateTime = DateTime.Now.AddHours(200),
 					FieldId = 2,
-					UserId = "141b7af4-e40a-4330-b7cf-9b85cb579c7c",
+					TeamOneCaptainId = "141b7af4-e40a-4330-b7cf-9b85cb579c7c",
+					TeamTwoCaptainId = "069a5b6e-deb5-4dcc-bfd7-92dce2aea524",
 					PlayerCount = 12,
 					Featured = true,
 					Notes="",
@@ -151,7 +164,8 @@ namespace GameOnAPI.Data
 					EndDateTime = DateTime.Now.AddDays(4).AddHours(2),
 					DeadlineRequestsDateTime = DateTime.Now.AddHours(120),
 					FieldId = 1,
-					UserId = "141b7af4-e40a-4330-b7cf-9b85cb579c7c",
+					TeamOneCaptainId = "141b7af4-e40a-4330-b7cf-9b85cb579c7c",
+					TeamTwoCaptainId = "069a5b6e-deb5-4dcc-bfd7-92dce2aea524",
 					PlayerCount = 16,
 					Featured = true,
 					Notes = "",
@@ -165,7 +179,8 @@ namespace GameOnAPI.Data
 					StartDateTime = DateTime.Now.AddDays(2),
 					EndDateTime = DateTime.Now.AddDays(2).AddHours(3),
 					DeadlineRequestsDateTime = DateTime.Now.AddHours(300),
-					UserId = "069a5b6e-deb5-4dcc-bfd7-92dce2aea524",
+					TeamOneCaptainId = "141b7af4-e40a-4330-b7cf-9b85cb579c7c",
+					TeamTwoCaptainId= "069a5b6e-deb5-4dcc-bfd7-92dce2aea524",
 					FieldId = 3,
 					PlayerCount = 8,
 					Featured = true,
@@ -182,7 +197,8 @@ namespace GameOnAPI.Data
 					EndDateTime = DateTime.Now.AddDays(3).AddHours(2),
 					DeadlineRequestsDateTime = DateTime.Now.AddHours(200),
 					FieldId = 2,
-					UserId = "141b7af4-e40a-4330-b7cf-9b85cb579c7c",
+					TeamOneCaptainId = "141b7af4-e40a-4330-b7cf-9b85cb579c7c",
+					TeamTwoCaptainId = "069a5b6e-deb5-4dcc-bfd7-92dce2aea524",
 					PlayerCount = 12,
 					Featured = true,
 					Notes = "",
@@ -197,7 +213,8 @@ namespace GameOnAPI.Data
 					EndDateTime = DateTime.Now.AddDays(4).AddHours(2),
 					DeadlineRequestsDateTime = DateTime.Now.AddHours(120),
 					FieldId = 1,
-					UserId = "141b7af4-e40a-4330-b7cf-9b85cb579c7c",
+					TeamOneCaptainId = "141b7af4-e40a-4330-b7cf-9b85cb579c7c",
+					TeamTwoCaptainId = "069a5b6e-deb5-4dcc-bfd7-92dce2aea524",
 					PlayerCount = 16,
 					Featured = true,
 					Notes = "",

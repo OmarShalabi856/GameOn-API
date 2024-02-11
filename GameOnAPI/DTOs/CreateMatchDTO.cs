@@ -12,7 +12,9 @@ namespace GameOnAPI.DTOs
 		public DateTime CreationDateTime { get; set; }
 
 		public DateTime DeadlineRequestsDateTime { get; set; }
-		public string Email { get; set; }
+		public string TeamOneCaptainEmail { get; set; }
+
+		public string TeamTwoCaptainEmail { get; set; }
 
 		[ForeignKey("Field")]
 		public int FieldId { get; set; }

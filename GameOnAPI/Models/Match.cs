@@ -10,8 +10,15 @@ public class Match
 	public int Id { get; set; }
 
 	[Required]
-	public string UserId { get; set; }
-	public User User { get; set; }
+	public string TeamOneCaptainId { get; set; }
+
+	[ForeignKey("TeamOneCaptainId")]
+	public User TeamOneCaptain { get; set; }
+
+	public string? TeamTwoCaptainId { get; set; }
+
+	[ForeignKey("TeamTwoCaptainId")]
+	public User TeamTwoCaptain { get; set; }
 
 	[Required]
 	public DateTime StartDateTime { get; set; }
@@ -37,7 +44,7 @@ public class Match
 	public string Gender { get; set; }
 
 	public string AgeGroup { get; set; }
-	
+	public string Status { get; set; } = "Pending Confirmation";
 	public Field field { get; set; }
 	public List<MatchParticipation> Participations { get; set; }	
 }
