@@ -49,7 +49,7 @@ namespace GameOnAPI.Controllers
 			{
 				response.isSuccess = false;
 				response.message = "Username Or Password Is Incorrect!";
-				return BadRequest(response);
+				return Unauthorized(response);
 			}
 			response.result = lr;
 			return Ok(response);

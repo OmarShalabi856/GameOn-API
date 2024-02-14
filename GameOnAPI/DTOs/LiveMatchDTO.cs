@@ -6,7 +6,15 @@ namespace GameOnAPI.DTOs
 {
 	public class LiveMatchDTO
 	{
-		public string userId { get; set; }
+		public string TeamOneCaptainId { get; set; }
+
+		[ForeignKey("TeamOneCaptainId")]
+		public User TeamOneCaptain { get; set; }
+
+		public string? TeamTwoCaptainId { get; set; }
+
+		[ForeignKey("TeamTwoCaptainId")]
+		public User TeamTwoCaptain { get; set; }
 
 		public DateTime StartDateTime { get; set; }
 

@@ -10,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Identity.Web.Resource;
 using System.Text.Json;
 using Response = GameOnAPI.DTOs.Response;
+using Team = GameOnAPI.Models.Team;
 
 namespace GameOnAPI.Controllers
 {
@@ -39,20 +40,31 @@ namespace GameOnAPI.Controllers
 			try
 			{
 				Invitation invitation = await _db.Invitation
+					.Include(i=>i.Match)
 					.Include(i => i.InvitedPlayer)
 					.Where(i => i.InvitedPlayer.Email.Equals(update.email) &&
 					i.Match.Id == update.matchId).FirstOrDefaultAsync();
 
+
 				if (invitation is null)
 					return NotFound();
-				invitation.Status = update.accepted ? "Accepted" : "Rejected";
-				string userId = await _db.User.Where(i => i.Email.Equals(update.email)).Select(i => i.Id).FirstOrDefaultAsync();
+
+
+				invitation.Status = SetInvitationStatus(update);
+
+				string userId = await GetUserId(update);
+
+				CheckIfInviteCreatesMatch(invitation);
+				Team teamPlayerFor = SetTeam(invitation);
+				 
+
 				if (update.accepted && userId!=null)
 				{
-					_db.MatchParticipation.AddAsync(new MatchParticipation()
+					await _db.MatchParticipation.AddAsync(new MatchParticipation()
 					{
 						MatchId = invitation.MatchId,
 						UserId = userId,
+						TeamPlayingFor=teamPlayerFor
 
 					}); 
 				}
@@ -76,6 +88,41 @@ namespace GameOnAPI.Controllers
 				return BadRequest(response);
 			}
 		}
+
+		private async Task<string> GetUserId(UpdateInvitationStatus update)
+		{
+			string userId= await _db.User.Where(i => i.Email.Equals(update.email)).Select(i => i.Id).FirstOrDefaultAsync();
+
+			return userId;
+		}
+
+		private string SetInvitationStatus(UpdateInvitationStatus update)
+		{
+			return update.accepted ? "Accepted" : "Rejected";
+		}
+
+		private Team SetTeam(Invitation invitation)
+		{
+			if (invitation.MatchCreation)
+			{
+				return Team.Team2;
+			}
+			
+				return (invitation.Match.TeamOneCaptainId == invitation.MatchCaptainId)
+				? Team.Team1
+				: Team.Team2;
+		}
+
+		private void CheckIfInviteCreatesMatch( Invitation invitation)
+		{
+			if (invitation.MatchCreation)
+			{
+				Match match=_db.Match.Find(invitation.MatchId);
+				match.Status = invitation.Status=="Accepted"?"Created":"Cancelled";
+				_db.SaveChangesAsync();
+			}
+		}
+
 		[HttpGet("get-invites", Name = "GetInvitations")]
 		public async Task<ActionResult<List<Invitation>>> GetInvitations([FromQuery] InvitationFilter filters)
 		{
@@ -165,6 +212,7 @@ namespace GameOnAPI.Controllers
 
 				_db.Match.Add(matchDTO);
 				await _db.SaveChangesAsync();
+				SendTeamTwoCaptainInvite(match, matchDTO.TeamTwoCaptainId, matchDTO.TeamOneCaptainId);
 				return Ok(response);
 			}
 			catch (Exception e)
@@ -176,6 +224,43 @@ namespace GameOnAPI.Controllers
 			}
 
 		}
+
+		private void SendTeamTwoCaptainInvite(CreateMatchDTO match, string teamTwoCaptainId, string teamOneCaptainId)
+		{
+			int matchId = _db.Match
+				.Where(m => m.TeamOneCaptainId == teamOneCaptainId && m.TeamTwoCaptainId == teamTwoCaptainId && m.StartDateTime == match.StartDateTime && m.Status == "Pending Confirmation")
+				.Select(i => i.Id)
+				.FirstOrDefault();
+
+			if (matchId == 0)
+			{
+				throw new Exception("Can't Send Invite To Team Captain Two Because Match Isn't Created!");
+			}
+
+			try
+			{
+				Invitation playerInvitation = new Invitation
+				{
+					MatchCaptainId = teamOneCaptainId,
+					InvitedPlayerId = teamTwoCaptainId,
+					MatchId = matchId,
+					ExpiryDate = match.DeadlineRequestsDateTime,
+					SentDate = DateTime.Now,
+					Status = "Pending",
+					MatchCreation=true,
+					Notes = match.Notes
+				};
+
+				_db.Invitation.Add(playerInvitation);
+				_db.SaveChanges();
+			}
+			catch (Exception ex)
+			{
+				throw new Exception("Error while sending invitation to Team Captain Two.", ex);
+			}
+		}
+
+
 		[HttpGet("matches", Name = "GetMatches")]
 		public async Task<ActionResult<List<Match>>> GetMatches([FromQuery] MatchFilters filters)
 		{

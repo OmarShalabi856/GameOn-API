@@ -26,5 +26,7 @@ namespace GameOnAPI.Models
 
 		public string Status { get; set; }
 		public DateTime SentDate { get; set; }
+
+		public bool MatchCreation { get; set; } = false;
 	}
 }
