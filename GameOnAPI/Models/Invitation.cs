@@ -11,11 +11,11 @@ namespace GameOnAPI.Models
 		public int Id { get; set; }
 
 		[ForeignKey("MatchCaptain")] 
-		public string MatchCaptainId { get; set; }
+		public string? MatchCaptainId { get; set; }
 		public User MatchCaptain { get; set; }
 
 		[ForeignKey("InvitedPlayer")] 
-		public string InvitedPlayerId { get; set; }
+		public string? InvitedPlayerId { get; set; }
 		public User InvitedPlayer { get; set; }
 
 		public int MatchId { get; set; }

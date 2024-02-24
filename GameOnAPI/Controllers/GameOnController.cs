@@ -7,8 +7,10 @@ using GameOnAPI.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.Identity.Web.Resource;
 using System.Text.Json;
+using System.Threading.Channels;
 using Response = GameOnAPI.DTOs.Response;
 using Team = GameOnAPI.Models.Team;
 
@@ -40,7 +42,7 @@ namespace GameOnAPI.Controllers
 			try
 			{
 				Invitation invitation = await _db.Invitation
-					.Include(i=>i.Match)
+					.Include(i => i.Match)
 					.Include(i => i.InvitedPlayer)
 					.Where(i => i.InvitedPlayer.Email.Equals(update.email) &&
 					i.Match.Id == update.matchId).FirstOrDefaultAsync();
@@ -54,19 +56,19 @@ namespace GameOnAPI.Controllers
 
 				string userId = await GetUserId(update);
 
-				CheckIfInviteCreatesMatch(invitation);
+				await CheckIfInviteCreatesMatch(invitation);
 				Team teamPlayerFor = SetTeam(invitation);
-				 
 
-				if (update.accepted && userId!=null)
+
+				if (update.accepted && userId != null)
 				{
 					await _db.MatchParticipation.AddAsync(new MatchParticipation()
 					{
 						MatchId = invitation.MatchId,
 						UserId = userId,
-						TeamPlayingFor=teamPlayerFor
+						TeamPlayingFor = teamPlayerFor
 
-					}); 
+					});
 				}
 				else
 				{
@@ -74,7 +76,7 @@ namespace GameOnAPI.Controllers
 					response.isSuccess = false;
 					return NotFound(response);
 				}
-				
+
 				await _db.SaveChangesAsync();
 
 				return Ok(response);
@@ -91,7 +93,7 @@ namespace GameOnAPI.Controllers
 
 		private async Task<string> GetUserId(UpdateInvitationStatus update)
 		{
-			string userId= await _db.User.Where(i => i.Email.Equals(update.email)).Select(i => i.Id).FirstOrDefaultAsync();
+			string userId = await _db.User.Where(i => i.Email.Equals(update.email)).Select(i => i.Id).FirstOrDefaultAsync();
 
 			return userId;
 		}
@@ -107,19 +109,19 @@ namespace GameOnAPI.Controllers
 			{
 				return Team.Team2;
 			}
-			
-				return (invitation.Match.TeamOneCaptainId == invitation.MatchCaptainId)
-				? Team.Team1
-				: Team.Team2;
+
+			return (invitation.Match.TeamOneCaptainId == invitation.MatchCaptainId)
+			? Team.Team1
+			: Team.Team2;
 		}
 
-		private void CheckIfInviteCreatesMatch( Invitation invitation)
+		private async Task CheckIfInviteCreatesMatch(Invitation invitation)
 		{
 			if (invitation.MatchCreation)
 			{
-				Match match=_db.Match.Find(invitation.MatchId);
-				match.Status = invitation.Status=="Accepted"?"Created":"Cancelled";
-				_db.SaveChangesAsync();
+				Match match = await _db.Match.FindAsync(invitation.MatchId);
+				match.Status = invitation.Status == "Accepted" ? "Created" : "Cancelled";
+				await _db.SaveChangesAsync();
 			}
 		}
 
@@ -211,7 +213,16 @@ namespace GameOnAPI.Controllers
 				.FirstOrDefault();
 
 				_db.Match.Add(matchDTO);
+
 				await _db.SaveChangesAsync();
+				Match createdMatch = _db.Match.Where(i => i.Equals(matchDTO)).FirstOrDefault();
+				await _db.MatchParticipation.AddAsync(new MatchParticipation()
+				{
+					MatchId = createdMatch.Id,
+					UserId = createdMatch.TeamOneCaptainId,
+					TeamPlayingFor = Team.Team1
+
+				});
 				SendTeamTwoCaptainInvite(match, matchDTO.TeamTwoCaptainId, matchDTO.TeamOneCaptainId);
 				return Ok(response);
 			}
@@ -223,6 +234,183 @@ namespace GameOnAPI.Controllers
 				return BadRequest(response);
 			}
 
+		}
+		[HttpPost("update-match",Name = "UpdateMatch")]
+		public async Task<ActionResult<Response>> UpdateMatch(UpdateMatchDTO updatedMatch)
+		{
+			try
+			{
+				var changes = new List<string>();
+				var existingMatch = _db.Match.Find(updatedMatch.Id);
+				var user = _db.User.Find(updatedMatch.UpdatingUserId);
+
+				if (existingMatch != null)
+				{
+					DateTime ConvertToUserTimezone(DateTime utcDateTime)
+					{
+						var beirutTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Asia/Beirut");
+						return TimeZoneInfo.ConvertTimeFromUtc(utcDateTime, beirutTimeZone);
+					}
+
+					if (existingMatch.StartDateTime != ConvertToUserTimezone(updatedMatch.StartDateTime))
+					{
+						changes.Add("Start Date and Time");
+						existingMatch.StartDateTime = ConvertToUserTimezone(updatedMatch.StartDateTime);
+					}
+
+					if (existingMatch.EndDateTime != ConvertToUserTimezone(updatedMatch.EndDateTime))
+					{
+						changes.Add("End Date and Time");
+						existingMatch.EndDateTime = ConvertToUserTimezone(updatedMatch.EndDateTime);
+					}
+
+					if (existingMatch.CreationDateTime != ConvertToUserTimezone(updatedMatch.CreationDateTime))
+					{
+						changes.Add("Creation Date and Time");
+						existingMatch.CreationDateTime = ConvertToUserTimezone(updatedMatch.CreationDateTime);
+					}
+
+					if (existingMatch.DeadlineRequestsDateTime != ConvertToUserTimezone(updatedMatch.DeadlineRequestsDateTime))
+					{
+						changes.Add("Deadline Requests Date and Time");
+						existingMatch.DeadlineRequestsDateTime = ConvertToUserTimezone(updatedMatch.DeadlineRequestsDateTime);
+					}
+
+					if (existingMatch.FieldId != updatedMatch.FieldId)
+					{
+						changes.Add("Field ID");
+						existingMatch.FieldId = updatedMatch.FieldId;
+					}
+
+					if (existingMatch.Notes != updatedMatch.Notes)
+					{
+						changes.Add("Notes");
+						existingMatch.Notes = updatedMatch.Notes;
+					}
+
+					if (existingMatch.feePerPlayer != updatedMatch.feePerPlayer)
+					{
+						changes.Add("Fee Per Player");
+						existingMatch.feePerPlayer = updatedMatch.feePerPlayer;
+					}
+
+					if (existingMatch.Gender != updatedMatch.Gender)
+					{
+						changes.Add("Gender");
+						existingMatch.Gender = updatedMatch.Gender;
+					}
+
+					if (existingMatch.AgeGroup != updatedMatch.AgeGroup)
+					{
+						changes.Add("Age Group");
+						existingMatch.AgeGroup = updatedMatch.AgeGroup;
+					}
+				}
+
+				_db.Match.Update(existingMatch);
+				await _db.SaveChangesAsync();
+
+				if (changes.Any())
+				{
+					var title = "Match Updated";
+					var changeMessage = $"The following match information were updated {string.Join(", ", changes)} by the captain {user.UserName}";
+					bool notificationSent = await SendNotification(updatedMatch.Id, title, changeMessage, user);
+					if (!notificationSent)
+					{
+						throw new Exception("An error occurred while sending notifications");
+					}
+				}
+
+				return Ok(new Response { isSuccess = true, message = "Match updated successfully." });
+			}
+			catch (Exception e)
+			{
+				_logger.LogError(e, "An error occurred while updating the match!");
+				return BadRequest(new Response { isSuccess = false, message = "An error occurred while updating the match or sending the notifications." });
+			}
+		}
+
+		[HttpGet("get-notifications")]
+		public  ActionResult<List<Notification>> GetNotifications(string userId)
+		{
+			try
+			{
+				var matchesParticipatingIn = _db.MatchParticipation.Where(i => i.UserId == userId).Select(m => m.MatchId).ToList();
+
+				return _db.Notification.Where(n => matchesParticipatingIn.Any(i => n.MatchId == i)).ToList();
+			}
+			catch(Exception ex)
+			{
+				_logger.LogError(ex, "An error occurred while fetching notifications");
+				return BadRequest(new Response { isSuccess = false, message = "An error occurred while fetching the notifications." });
+
+			}
+		}
+
+		private async Task<bool> SendNotification(int matchId, string title, string changeMessage, User user)
+		{
+			try
+			{
+				var receivingUsers = _db.MatchParticipation
+					.Where(i => i.MatchId == matchId && i.UserId != user.Id)
+					.Select(i => i.User)
+					.ToList();
+
+				int notificationId = await CreateNotification(matchId, title, changeMessage, user);
+				if (notificationId != 0)
+				{
+					SendNotificationToReceivingUsers(receivingUsers, notificationId);
+					return true;
+				}
+				return false;
+
+
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine(ex.StackTrace);
+				return false;
+			}
+		}
+
+		private async void SendNotificationToReceivingUsers(List<User> receivingUsers, int notificationId)
+		{
+			List<NotificationUser> notificationUsers = new List<NotificationUser>();
+			foreach (var user in receivingUsers)
+			{
+				NotificationUser notificationUser = new NotificationUser()
+				{
+					NotificationId = notificationId,
+					UserId = user.Id,
+				};
+				notificationUsers.Add(notificationUser);
+			}
+			if(notificationUsers.Count()>0)
+				await _db.NotificationUser.AddRangeAsync(notificationUsers);
+		}
+
+		private async Task<int> CreateNotification(int matchId, string title, string changeMessage, User user)
+		{
+
+			Notification notification = new Notification()
+			{
+				MatchId = matchId,
+				Title = title,
+				SendingUserId = user.Id,
+				Description = changeMessage,
+				timeStamp = DateTime.Now,
+
+			};
+
+
+			await _db.Notification.AddAsync(notification);
+			await _db.SaveChangesAsync();
+			int notificationId = _db.Notification
+				.Where(n => n.Equals(notification))
+				.Select(n => n.Id)
+				.FirstOrDefault();
+
+			return notificationId;
 		}
 
 		private void SendTeamTwoCaptainInvite(CreateMatchDTO match, string teamTwoCaptainId, string teamOneCaptainId)
@@ -247,7 +435,7 @@ namespace GameOnAPI.Controllers
 					ExpiryDate = match.DeadlineRequestsDateTime,
 					SentDate = DateTime.Now,
 					Status = "Pending",
-					MatchCreation=true,
+					MatchCreation = true,
 					Notes = match.Notes
 				};
 
@@ -365,8 +553,8 @@ namespace GameOnAPI.Controllers
 				return StatusCode(500, "An error occurred while processing your request.");
 			}
 		}
-		[HttpPost("update-participations",Name ="UpdateMatchParticipations")]
-		public async Task<ActionResult<Response>> UpdateMatchParticipations([FromBody]List<UpdatePosition> updatedParticipations)
+		[HttpPost("update-participations", Name = "UpdateMatchParticipations")]
+		public async Task<ActionResult<Response>> UpdateMatchParticipations([FromBody] List<UpdatePosition> updatedParticipations)
 		{
 
 			try
@@ -434,7 +622,7 @@ namespace GameOnAPI.Controllers
 				{
 					existingInvitation.ExpiryDate = matchInvitation.ExpiryDate.GetValueOrDefault();
 					existingInvitation.Status = "Pending";
-					var existingParticipation= await _db.MatchParticipation
+					var existingParticipation = await _db.MatchParticipation
 						.Where(i => i.MatchId == matchInvitation.MatchId && i.UserId == invitedPlayerId)
 						.FirstOrDefaultAsync();
 

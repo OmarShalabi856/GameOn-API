@@ -11,6 +11,8 @@ using Microsoft.Owin.Security;
 using Microsoft.AspNet.Identity;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using System.Text.Json.Serialization;
+using System.Text.Json;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,7 +20,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 {
 	options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
-});
+}, ServiceLifetime.Scoped);
+
 
 builder.Services.AddSwaggerGen(options =>
 {
@@ -73,11 +76,11 @@ builder.Services.AddCors(options =>
 	options.AddPolicy("AllowReactApp", builder =>
 	{
 		builder.WithOrigins("http://localhost:3000")
+			   .WithOrigins("http://game-on-frontend.s3-website-us-east-1.amazonaws.com")
 			   .AllowAnyMethod()
 			   .AllowAnyHeader();
 	});
 });
-
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

@@ -26,6 +26,11 @@ namespace GameOnAPI.DTOs
 
 		public int FieldId { get; set; }
 
+		public string AgeGroup { get; set; }
+		public string Notes { get; set; }
+		public double feePerPlayer { get; set; }
+		public string Gender { get; set; }
+
 		public bool Featured { get; set; }
 
 		public Field field { get; set; }

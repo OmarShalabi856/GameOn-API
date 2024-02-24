@@ -19,6 +19,10 @@ namespace GameOnAPI.Data
 
 		public DbSet<Invitation> Invitation { get; set; }
 
+		public DbSet<Notification> Notification { get; set; }
+
+		public DbSet<NotificationUser> NotificationUser { get; set; }
+
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
 
@@ -56,174 +60,19 @@ namespace GameOnAPI.Data
 			modelBuilder.Entity<IdentityRole<string>>().ToTable("Roles");
 			modelBuilder.Entity<IdentityUserRole<string>>().ToTable("UserRoles");
 
+			modelBuilder.Entity<User>()
+			.HasMany(user => user.Invitations)
+			.WithOne(invitation => invitation.MatchCaptain)
+			.HasForeignKey(invitation => invitation.MatchCaptainId)
+			.OnDelete(DeleteBehavior.Restrict);
 
-			modelBuilder.Entity<User>().HasData(
-				new User
-				{
-					Id = "324u3943583404",
-					UserName = "Samer",
-					Name = "Samer Shalabi",
-					Email = "user1@example.com",
-					position = Position.General_Midfielder,
-					preferredFoot = PreferredFoot.Right,
-					experienceLevel = ExperienceLevel.Professional,
-					FavoriteTeam = "Liverpool",
-					Height = 175.5,
-					Weight = 70.3,
-					Location = "Bchamoun",
-					ProfileImageUrl = "profile1.jpg"
-					
-				},
-				new User
-				{
-					Id = "32ewdewd83404",
-					UserName = "Ali",
-					Name = "Ali Hussein",
-					Email = "user2@example.com",
-					position = Position.Right_Back,
-					preferredFoot = PreferredFoot.Left,
-					experienceLevel = ExperienceLevel.Amateur,
-					FavoriteTeam = "Barcelona",
-					Height = 180.0,
-					Weight = 75.2,
-					Location = "Saida",
-					ProfileImageUrl = "profile2.jpg"
-				},
-				new User
-				{
+			modelBuilder.Entity<Notification>()
+				.HasOne(n => n.SendingUser)
+				.WithMany()
+				.HasForeignKey(n => n.SendingUserId)
+				.OnDelete(DeleteBehavior.Restrict);  // Or use DeleteBehavior.Cascade if needed
 
-					Id = "32322432nvfvfwdewd83404",
-					UserName = "Omar",
-					Name = "Omar Shalabi",
-					Email = "user3@example.com",
-					position = Position.Striker,
-					preferredFoot = PreferredFoot.Right,
-					experienceLevel = ExperienceLevel.Professional,
-					FavoriteTeam = "Real Madrid",
-					Height = 172.0,
-					Weight = 68.5,
-					Location = "Beirut",
-					ProfileImageUrl = "profile3.jpg"
-				}
-				,
-				new User
-				{
-
-					Id = "3232onffenmessi8marvfwdewd83404",
-					UserName = "Hussein",
-					Name = "Hussein Ali",
-					Email = "user3@example.com",
-					position = Position.Center_Back,
-					preferredFoot = PreferredFoot.Right,
-					experienceLevel = ExperienceLevel.Professional,
-					FavoriteTeam = "Napoli",
-					Height = 172.0,
-					Weight = 68.5,
-					Location = "Aramoun",
-					ProfileImageUrl = "profile4.jpg"
-
-				});
-			modelBuilder.Entity<Match>().HasData(
-				new Match
-				{
-					Id = 13,
-					StartDateTime = DateTime.Now.AddDays(2),
-					EndDateTime = DateTime.Now.AddDays(2).AddHours(3),
-					DeadlineRequestsDateTime = DateTime.Now.AddHours(300),
-					TeamOneCaptainId = "069a5b6e-deb5-4dcc-bfd7-92dce2aea524",
-					TeamTwoCaptainId = "141b7af4-e40a-4330-b7cf-9b85cb579c7c",
-					FieldId = 3,
-					PlayerCount = 8,
-					Featured = true,
-					Notes = "",
-					feePerPlayer = 7,
-					AgeGroup = "Under 10",
-					Gender = "Male",
-
-				},
-				new Match
-				{
-					Id = 12,
-					EndDateTime = DateTime.Now.AddDays(3).AddHours(2),
-					DeadlineRequestsDateTime = DateTime.Now.AddHours(200),
-					FieldId = 2,
-					TeamOneCaptainId = "141b7af4-e40a-4330-b7cf-9b85cb579c7c",
-					TeamTwoCaptainId = "069a5b6e-deb5-4dcc-bfd7-92dce2aea524",
-					PlayerCount = 12,
-					Featured = true,
-					Notes="",
-					feePerPlayer=10,
-					AgeGroup= "Under10",
-					Gender="Male",
-
-				},
-				new Match
-				{
-					Id = 10,
-					StartDateTime = DateTime.Now.AddDays(4),
-					EndDateTime = DateTime.Now.AddDays(4).AddHours(2),
-					DeadlineRequestsDateTime = DateTime.Now.AddHours(120),
-					FieldId = 1,
-					TeamOneCaptainId = "141b7af4-e40a-4330-b7cf-9b85cb579c7c",
-					TeamTwoCaptainId = "069a5b6e-deb5-4dcc-bfd7-92dce2aea524",
-					PlayerCount = 16,
-					Featured = true,
-					Notes = "",
-					feePerPlayer = 12,
-					AgeGroup = "10-15",
-					Gender = "Female",
-				},
-				new Match
-				{
-					Id = 3,
-					StartDateTime = DateTime.Now.AddDays(2),
-					EndDateTime = DateTime.Now.AddDays(2).AddHours(3),
-					DeadlineRequestsDateTime = DateTime.Now.AddHours(300),
-					TeamOneCaptainId = "141b7af4-e40a-4330-b7cf-9b85cb579c7c",
-					TeamTwoCaptainId= "069a5b6e-deb5-4dcc-bfd7-92dce2aea524",
-					FieldId = 3,
-					PlayerCount = 8,
-					Featured = true,
-					Notes = "",
-					feePerPlayer = 7,
-					AgeGroup = "18+",
-					Gender = "Male",
-
-				},
-				new Match
-				{
-					Id = 2,
-					StartDateTime = DateTime.Now.AddDays(3),
-					EndDateTime = DateTime.Now.AddDays(3).AddHours(2),
-					DeadlineRequestsDateTime = DateTime.Now.AddHours(200),
-					FieldId = 2,
-					TeamOneCaptainId = "141b7af4-e40a-4330-b7cf-9b85cb579c7c",
-					TeamTwoCaptainId = "069a5b6e-deb5-4dcc-bfd7-92dce2aea524",
-					PlayerCount = 12,
-					Featured = true,
-					Notes = "",
-					feePerPlayer = 10,
-					AgeGroup = "18+",
-					Gender = "Male",
-				},
-				new Match
-				{
-					Id = 1,
-					StartDateTime = DateTime.Now.AddDays(4),
-					EndDateTime = DateTime.Now.AddDays(4).AddHours(2),
-					DeadlineRequestsDateTime = DateTime.Now.AddHours(120),
-					FieldId = 1,
-					TeamOneCaptainId = "141b7af4-e40a-4330-b7cf-9b85cb579c7c",
-					TeamTwoCaptainId = "069a5b6e-deb5-4dcc-bfd7-92dce2aea524",
-					PlayerCount = 16,
-					Featured = true,
-					Notes = "",
-					feePerPlayer = 12,
-					AgeGroup = "10-15",
-					Gender = "Female",
-				}
-
-			);
+			
 
 			modelBuilder.Entity<Field>().HasData(
 				new Field
@@ -251,26 +100,7 @@ namespace GameOnAPI.Data
 				}
 				);
 
-			modelBuilder.Entity<MatchParticipation>().HasData(
-				new MatchParticipation
-				{
-					Id = 1,
-					UserId = "3232onffenmessi8marvfwdewd83404",
-					MatchId=1,
-					position=Position.Left_Back,
-					TeamPlayingFor=Team.Team1,
 
-				},
-				new MatchParticipation
-				{
-					Id = 2,
-					UserId = "32ewdewd83404",
-					MatchId = 1,
-					position = Position.Striker,
-					TeamPlayingFor = Team.Team2,
-
-				}
-				);
 
 			ConfigureUserRolesKey(modelBuilder);
 		}
@@ -281,5 +111,5 @@ namespace GameOnAPI.Data
 				.HasKey(ur => new { ur.UserId, ur.RoleId });
 		}
 
-	} 
+	}
 }
