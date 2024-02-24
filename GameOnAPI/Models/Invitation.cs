@@ -18,6 +18,7 @@ namespace GameOnAPI.Models
 		public string? InvitedPlayerId { get; set; }
 		public User InvitedPlayer { get; set; }
 
+		[ForeignKey("Match")]
 		public int MatchId { get; set; }
 		public Match Match { get; set; }
 

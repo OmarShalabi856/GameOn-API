@@ -29,10 +29,6 @@ public class Match
 
 	public DateTime CreationDateTime { get; set; }
 
-	[Required]
-	[Range(2, int.MaxValue, ErrorMessage = "Player count must be at least 2.")]
-	public int PlayerCount { get; set; }
-
 	public string Notes { get; set; }
 
 	public double feePerPlayer { get; set; }	
@@ -46,5 +42,6 @@ public class Match
 	public string AgeGroup { get; set; }
 	public string Status { get; set; } = "Pending Confirmation";
 	public Field field { get; set; }
-	public List<MatchParticipation> Participations { get; set; }	
+	public List<MatchParticipation> Participations { get; set; }
+	public List<Invitation> Invitations { get; set; }
 }

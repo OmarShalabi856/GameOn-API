@@ -39,9 +39,22 @@ namespace GameOnAPI.Data
 			.HasForeignKey(invitation => invitation.MatchCaptainId);
 
 			modelBuilder.Entity<Invitation>()
-				.HasOne(invitation => invitation.InvitedPlayer)
-				.WithMany()
-				.HasForeignKey(invitation => invitation.InvitedPlayerId);
+			.HasOne(invitation => invitation.InvitedPlayer)
+			.WithMany()
+			.HasForeignKey(invitation => invitation.InvitedPlayerId);
+
+
+			modelBuilder.Entity<User>()
+			.HasMany(u => u.ReceivedNotifications)
+			.WithOne(n => n.User)
+			.HasForeignKey(n => n.UserId);
+
+			modelBuilder.Entity<Invitation>()
+			.HasOne(invitation => invitation.Match)
+			.WithMany(match => match.Invitations)
+			.HasForeignKey(invitation => invitation.MatchId)
+			.OnDelete(DeleteBehavior.Cascade);
+
 
 			modelBuilder.Entity<Match>()
 			.HasOne(match => match.TeamOneCaptain)

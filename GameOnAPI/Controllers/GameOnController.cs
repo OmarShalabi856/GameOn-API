@@ -54,11 +54,12 @@ namespace GameOnAPI.Controllers
 
 				invitation.Status = SetInvitationStatus(update);
 
-				string userId = await GetUserId(update);
+				var user = await GetUser(update);
+				string userId = user?.Id;
+
 
 				await CheckIfInviteCreatesMatch(invitation);
 				Team teamPlayerFor = SetTeam(invitation);
-
 
 				if (update.accepted && userId != null)
 				{
@@ -69,6 +70,11 @@ namespace GameOnAPI.Controllers
 						TeamPlayingFor = teamPlayerFor
 
 					});
+					
+
+					var notificationTitle = "Player Joined";
+					var notificationMessage = $"{user?.UserName} just joined the the match!";
+					await SendNotification(update.matchId, notificationTitle, notificationMessage, user);
 				}
 				else
 				{
@@ -78,7 +84,7 @@ namespace GameOnAPI.Controllers
 				}
 
 				await _db.SaveChangesAsync();
-
+				
 				return Ok(response);
 
 			}
@@ -91,11 +97,11 @@ namespace GameOnAPI.Controllers
 			}
 		}
 
-		private async Task<string> GetUserId(UpdateInvitationStatus update)
+		private async Task<User> GetUser(UpdateInvitationStatus update)
 		{
-			string userId = await _db.User.Where(i => i.Email.Equals(update.email)).Select(i => i.Id).FirstOrDefaultAsync();
+			var user = await _db.User.Where(i => i.Email.Equals(update.email)).FirstOrDefaultAsync();
 
-			return userId;
+			return user;
 		}
 
 		private string SetInvitationStatus(UpdateInvitationStatus update)
@@ -173,25 +179,6 @@ namespace GameOnAPI.Controllers
 				_logger.LogError(ex, "An error occurred while deleting the invitation!");
 				return StatusCode(500, new Response { isSuccess = false, message = "An error occurred while deleting the invitation!" });
 			}
-		}
-
-		[HttpGet("featured", Name = "GetFeaturedMatches")]
-		public ActionResult<IEnumerable<Match>> GetFeaturedMatches()
-		{
-			try
-			{
-				var currentDateTime = DateTime.Now;
-				var availableMatches = _db.Match
-					.Where(x => x.DeadlineRequestsDateTime > currentDateTime && x.Featured).Include(x => x.field)
-					.ToList();
-				return Ok(availableMatches);
-			}
-			catch (Exception e)
-			{
-				_logger.LogError(e, "An error occured while retrieving available matches!");
-				return StatusCode(500, "An error occurred while processing your request.");
-			}
-
 		}
 
 		[HttpPost("create-match", Name = "CreateMatch")]
@@ -313,7 +300,7 @@ namespace GameOnAPI.Controllers
 				if (changes.Any())
 				{
 					var title = "Match Updated";
-					var changeMessage = $"The following match information were updated {string.Join(", ", changes)} by the captain {user.UserName}";
+					var changeMessage = $"The following match information were updated: {string.Join(", ", changes)} by the captain {user.UserName}";
 					bool notificationSent = await SendNotification(updatedMatch.Id, title, changeMessage, user);
 					if (!notificationSent)
 					{
@@ -331,15 +318,20 @@ namespace GameOnAPI.Controllers
 		}
 
 		[HttpGet("get-notifications")]
-		public  ActionResult<List<Notification>> GetNotifications(string userId)
+		public  ActionResult<List<NotificationUser>> GetNotifications(string userId)
 		{
 			try
 			{
-				var matchesParticipatingIn = _db.MatchParticipation.Where(i => i.UserId == userId).Select(m => m.MatchId).ToList();
+				var user = _db.User
+					.Include(i => i.ReceivedNotifications)
+					.ThenInclude(i => i.Notification)
+					.Where(i => i.Id.Equals(userId))
+					.FirstOrDefault();
 
-				return _db.Notification.Where(n => matchesParticipatingIn.Any(i => n.MatchId == i)).ToList();
+
+				return user.ReceivedNotifications;
 			}
-			catch(Exception ex)
+			catch (Exception ex)
 			{
 				_logger.LogError(ex, "An error occurred while fetching notifications");
 				return BadRequest(new Response { isSuccess = false, message = "An error occurred while fetching the notifications." });
@@ -356,7 +348,7 @@ namespace GameOnAPI.Controllers
 					.Select(i => i.User)
 					.ToList();
 
-				int notificationId = await CreateNotification(matchId, title, changeMessage, user);
+				 int notificationId = await CreateNotification(matchId, title, changeMessage, user);
 				if (notificationId != 0)
 				{
 					SendNotificationToReceivingUsers(receivingUsers, notificationId);
@@ -373,7 +365,30 @@ namespace GameOnAPI.Controllers
 			}
 		}
 
-		private async void SendNotificationToReceivingUsers(List<User> receivingUsers, int notificationId)
+		[HttpPost("delete-match")]
+		public async Task<ActionResult> DeleteMatch(DeleteMatchDTO matchDTO)
+		{
+			try
+			{
+				var match = _db.Match.Find(matchDTO.matchId);
+				if(matchDTO.userId.Equals(match.TeamOneCaptainId) || matchDTO.userId.Equals(match.TeamTwoCaptainId))
+				{
+					_db.Match.Remove(match);
+					await _db.SaveChangesAsync();
+					return Ok();
+				}
+				return Unauthorized();
+
+
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine(ex.StackTrace);
+				return BadRequest();
+			}
+		}
+
+		private async Task SendNotificationToReceivingUsers(List<User> receivingUsers, int notificationId)
 		{
 			List<NotificationUser> notificationUsers = new List<NotificationUser>();
 			foreach (var user in receivingUsers)
@@ -385,8 +400,12 @@ namespace GameOnAPI.Controllers
 				};
 				notificationUsers.Add(notificationUser);
 			}
-			if(notificationUsers.Count()>0)
+			if (notificationUsers.Count() > 0)
+			{
 				await _db.NotificationUser.AddRangeAsync(notificationUsers);
+				await _db.SaveChangesAsync();
+			}
+				
 		}
 
 		private async Task<int> CreateNotification(int matchId, string title, string changeMessage, User user)
@@ -459,12 +478,12 @@ namespace GameOnAPI.Controllers
 					.Include(m => m.field)
 					.Include(m => m.TeamOneCaptain)
 					.Include(m => m.TeamTwoCaptain)
-					.Where(m => m.DeadlineRequestsDateTime > DateTime.Now)
 					.ToList();
 
 				if (matches.Count() == 0)
 				{
-					return NoContent();
+					response.result = new List<Match>();
+					return Ok(response);
 				}
 				if (filters.UserEmail != null && filters.UserId == null)
 					filters.UserId = _db.Users
@@ -490,42 +509,19 @@ namespace GameOnAPI.Controllers
 
 		private List<Match> ApplyFilters(List<Match> matches, MatchFilters filters)
 		{
-			return matches.Where(match => (filters.City == null || match.field.Location == filters.City) &&
+			var validMatches= matches.Where(match => (filters.City == null || match.field.Location == filters.City) &&
 			(filters.AgeGroup == null || match.AgeGroup == filters.AgeGroup) &&
 			(filters.Gender == null || match.Gender == filters.Gender) &&
-			(filters.FreeMatchesOnly == null || filters.FreeMatchesOnly ? match.feePerPlayer == 0 : match.feePerPlayer >= 0) && filters.UserId == null || filters.UserId == match.TeamOneCaptainId || filters.UserId == match.TeamTwoCaptainId)
+			(filters.FreeMatchesOnly == null || filters.FreeMatchesOnly ? match.feePerPlayer == 0 : match.feePerPlayer >= 0) && (filters.UserId == null || filters.UserId == match.TeamOneCaptainId || filters.UserId == match.TeamTwoCaptainId) &&
+			(filters.Featured==null || filters.Featured == match.Featured))
 				.ToList();
+			if (filters.Newest)
+			{
+				validMatches = validMatches.Where(i => i.DeadlineRequestsDateTime > DateTime.Now).OrderByDescending(i => i.CreationDateTime).ToList();
+			}
+			return validMatches;
 		}
 
-		[HttpGet("newest", Name = "GetNewestMatches")]
-		public ActionResult<List<Match>> GetNewestMatches()
-		{
-			try
-			{
-				var newMatches = _db.Match
-					.Include(x => x.field)
-					.Where(match => match.CreationDateTime < DateTime.Now.AddDays(-7))
-					.OrderBy(match => match.CreationDateTime)
-					.ToList();
-				if (newMatches.Any())
-				{
-					response.result = newMatches;
-					return Ok(response);
-				}
-				else
-				{
-					return NoContent();
-
-				}
-
-			}
-			catch (Exception ex)
-			{
-				_logger.LogError(ex, "An error occurred while processing GetNewestMatches endpoint.");
-				return StatusCode(500, ex.Message);
-			}
-		}
-		//[Authorize(Roles = "Admin")]
 		[HttpGet("match-details", Name = "GetMatchDetails")]
 		public ActionResult<Match> GetMatchDetails(int id)
 		{
@@ -695,7 +691,8 @@ namespace GameOnAPI.Controllers
 		public string? AgeGroup { get; set; }
 		public string? City { get; set; }
 		public string? Gender { get; set; }
-
+		public bool Featured { get; set; }
+		public bool Newest { get; set; }
 		public bool FreeMatchesOnly { get; set; }
 		public string? UserEmail { get; set; }
 		public string? UserId { get; set; }

@@ -64,8 +64,9 @@ builder.Services.Configure<JWTOptions>(builder.Configuration.GetSection("ApiSett
 
 builder.Services.AddControllers().AddJsonOptions(options =>
 {
-	options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.Preserve;
+	options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
 });
+
 
 IMapper Mapper = MappingConfig.RegisterMaps().CreateMapper();
 builder.Services.AddSingleton(Mapper);

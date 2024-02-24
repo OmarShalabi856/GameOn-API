@@ -24,7 +24,7 @@ namespace GameOnAPI.Models
 
 		public List<Invitation> Invitations { get; set; }
 
-		public List<NotificationUser>? ReceivedNotifications { get; set; }
+		public List<NotificationUser> ReceivedNotifications { get; set; }
 
 		//public List<UserRoles> userRoles { get;set; }	
 		public string Name { get; set; }
