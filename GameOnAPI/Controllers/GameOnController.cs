@@ -11,15 +11,15 @@ using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.Identity.Web.Resource;
 using System.Text.Json;
 using System.Threading.Channels;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 using Response = GameOnAPI.DTOs.Response;
 using Team = GameOnAPI.Models.Team;
 
 namespace GameOnAPI.Controllers
 {
-	//[Authorize]
+	[Authorize]
 	[ApiController]
 	[Route("[controller]")]
-	//[RequiredScope(RequiredScopesConfigurationKey = "AzureAd:Scopes")]
 	public class GameOnController : ControllerBase
 	{
 
@@ -74,7 +74,11 @@ namespace GameOnAPI.Controllers
 
 					var notificationTitle = "Player Joined";
 					var notificationMessage = $"{user?.UserName} just joined the the match!";
-					await SendNotification(update.matchId, notificationTitle, notificationMessage, user);
+					var receivingUsers = _db.MatchParticipation
+					.Where(i => i.MatchId == update.matchId && i.UserId != user.Id)
+					.Select(i => i.User)
+					.ToList();
+					await SendNotification(receivingUsers,update.matchId, notificationTitle, notificationMessage, user);
 				}
 				else
 				{
@@ -301,7 +305,13 @@ namespace GameOnAPI.Controllers
 				{
 					var title = "Match Updated";
 					var changeMessage = $"The following match information were updated: {string.Join(", ", changes)} by the captain {user.UserName}";
-					bool notificationSent = await SendNotification(updatedMatch.Id, title, changeMessage, user);
+
+					var receivingUsers = _db.MatchParticipation
+					.Where(i => i.MatchId == updatedMatch.Id && i.UserId != user.Id)
+					.Select(i => i.User)
+					.ToList();
+
+					bool notificationSent = await SendNotification(receivingUsers,updatedMatch.Id, title, changeMessage, user);
 					if (!notificationSent)
 					{
 						throw new Exception("An error occurred while sending notifications");
@@ -339,19 +349,16 @@ namespace GameOnAPI.Controllers
 			}
 		}
 
-		private async Task<bool> SendNotification(int matchId, string title, string changeMessage, User user)
+		private async Task<bool> SendNotification(List<User> receivingUsers,int matchId, string title, string changeMessage, User user)
 		{
 			try
 			{
-				var receivingUsers = _db.MatchParticipation
-					.Where(i => i.MatchId == matchId && i.UserId != user.Id)
-					.Select(i => i.User)
-					.ToList();
+		
 
 				 int notificationId = await CreateNotification(matchId, title, changeMessage, user);
 				if (notificationId != 0)
 				{
-					SendNotificationToReceivingUsers(receivingUsers, notificationId);
+					await SendNotificationToReceivingUsers(receivingUsers, notificationId);
 					return true;
 				}
 				return false;
@@ -550,37 +557,39 @@ namespace GameOnAPI.Controllers
 			}
 		}
 		[HttpPost("update-participations", Name = "UpdateMatchParticipations")]
-		public async Task<ActionResult<Response>> UpdateMatchParticipations([FromBody] List<UpdatePosition> updatedParticipations)
+		public async Task<ActionResult<Response>> UpdateMatchParticipations([FromBody] UpdatePlayerPositionsDTO updatedPlayerPositions)
 		{
 
 			try
 			{
-
-				foreach (var participation in updatedParticipations)
+				var user = await _db.User.FindAsync(updatedPlayerPositions.ChangingUserId);
+				string title = "Your Position Changed";
+				string description = $"Your Position Has Changed In This Match By {user.UserName}, View Match To Check!";
+				foreach (var participation in updatedPlayerPositions.UpdatedParticipations)
 				{
-					var existingParticipation = await _db.MatchParticipation.FindAsync(participation.matchParticipationId);
-
+					var existingParticipation =  _db.MatchParticipation.Include(p => p.User).First(
+						p=>p.Id==participation.matchParticipationId);
+					
 					if (existingParticipation != null)
 					{
-
-						existingParticipation.xPosition = participation.xPosition;
-						existingParticipation.yPosition = participation.yPosition;
-
-
-						_db.MatchParticipation.Update(existingParticipation);
+						if(existingParticipation.xPosition!= participation.xPosition || existingParticipation.yPosition != participation.yPosition)
+						{
+							existingParticipation.xPosition = participation.xPosition;
+							existingParticipation.yPosition = participation.yPosition;
+							await SendNotification(new List<User>() { existingParticipation.User },existingParticipation.MatchId, title, description, user);
+							_db.MatchParticipation.Update(existingParticipation);
+						}
+						
 					}
 					else
 					{
 						_logger.LogError($"Match participation with Id {participation.matchParticipationId} not found.");
 						response.isSuccess = false;
 						response.message = $"Match participation with Id {participation.matchParticipationId} not found.";
-						return NotFound(response);
 					}
 				}
 
 				await _db.SaveChangesAsync();
-				response.isSuccess = true;
-				response.message = "Match participations updated successfully.";
 				return Ok(response);
 			}
 			catch (Exception ex)

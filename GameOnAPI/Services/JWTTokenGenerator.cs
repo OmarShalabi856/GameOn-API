@@ -13,7 +13,6 @@ namespace GameOnAPI.Services
 	public class jwtTokenGenerator : IjwtTokenGenerator
 	{
 		private readonly JWTOptions _options;
-		private const string CustomRolesClaimType = "roles";
 
 		public jwtTokenGenerator(IOptions<JWTOptions> options)
 		{
@@ -29,10 +28,9 @@ namespace GameOnAPI.Services
 				var key = Encoding.ASCII.GetBytes(_options.secret);
 				var claims = new List<Claim>()
 			{
-				new Claim(ClaimTypes.Email,user.Email),
+				new Claim(ClaimTypes.Email,user?.Email),
 			};
 
-			claims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role)));
 
 				var tokenDescriptor = new SecurityTokenDescriptor
 				{

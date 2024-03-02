@@ -3,7 +3,7 @@
 	public class UpdatePosition
 	{
 		public int matchParticipationId {  get; set; }
-		public int xPosition { get; set; }
-		public int yPosition { get; set; }
+		public double xPosition { get; set; }
+		public double yPosition { get; set; }
 	}
 }
